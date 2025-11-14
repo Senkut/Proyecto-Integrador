@@ -1,0 +1,10 @@
+edu\usta\Main.class
+edu\usta\infrastructure\config\UUIDGenerator.class
+edu\usta\domain\enums\Role.class
+edu\usta\domain\enums\EquipmentType.class
+edu\usta\domain\entities\Equipment.class
+edu\usta\domain\entities\BiomedicalEquipment.class
+edu\usta\domain\entities\Provider.class
+edu\usta\domain\entities\TechEquipment.class
+edu\usta\domain\entities\Person.class
+edu\usta\domain\enums\EquipmentStatus.class
