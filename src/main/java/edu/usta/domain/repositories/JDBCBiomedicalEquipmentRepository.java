@@ -9,15 +9,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.pbkdf2.RuntimeCryptoException;
-
 import edu.usta.domain.entities.BiomedicalEquipment;
-import edu.usta.domain.entities.Equipment;
-import edu.usta.domain.entities.Person;
-import edu.usta.domain.entities.Provider;
 import edu.usta.domain.enums.EquipmentStatus;
 import edu.usta.domain.enums.EquipmentType;
-import edu.usta.domain.enums.Role;
 import edu.usta.infrastructure.db.DatabaseConnection;
 
 public class JDBCBiomedicalEquipmentRepository implements GenericRepository<BiomedicalEquipment> {
@@ -31,7 +25,7 @@ public class JDBCBiomedicalEquipmentRepository implements GenericRepository<Biom
                                         be.calibrationCert AS be_calibrationCert,
 
                                         e.id AS e_id,
-                                        e.serial AS e_resial,
+                                        e.serial AS e_serial,
                                         e.brand AS e_brand,
                                         e.model AS e_model,
                                         e.type::text AS e_type,

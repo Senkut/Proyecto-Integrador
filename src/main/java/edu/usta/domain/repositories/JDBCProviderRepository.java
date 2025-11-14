@@ -5,17 +5,41 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.pbkdf2.RuntimeCryptoException;
 
 import edu.usta.domain.entities.Provider;
 import edu.usta.infrastructure.db.DatabaseConnection;
 
 public class JDBCProviderRepository implements GenericRepository<Provider> {
     private final DatabaseConnection db;
+    private final String BASE_SQL = """
+                                    SELECT
+                                        id,
+                                        name,
+                                        tax_id,
+                                        contactEmail
+                                    FROM provider
+            """;
+
+    private static final Map<String, String> ALLOWED_FIELDS = Map.of(
+            "name", "name",
+            "taxId", "tax_id",
+            "contactEmail", "contactEmail");
 
     public JDBCProviderRepository(DatabaseConnection db) {
         this.db = db;
+    }
+
+    private Provider mapResultSetToProvider(ResultSet result) throws SQLException {
+        return new Provider(
+                result.getObject("id", UUID.class).toString(),
+                result.getObject("name", String.class),
+                result.getObject("tax_id", String.class),
+                result.getObject("contactEmail", String.class));
     }
 
     @Override
@@ -49,13 +73,11 @@ public class JDBCProviderRepository implements GenericRepository<Provider> {
     @Override
     public Optional<Provider> findById(UUID id) {
 
-        // Falta el String column
-
-        final String sql = "SELECT id, name, tax_id, contactEmail FROM provider WHERE id = ?::uuid";
+        final String sql = BASE_SQL + " WHERE id = ?::uuid";
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setObject(1, id);
+            preparedStatement.setString(1, id.toString());
 
             try (ResultSet result = preparedStatement.executeQuery()) {
                 if (result.next()) {
@@ -101,34 +123,39 @@ public class JDBCProviderRepository implements GenericRepository<Provider> {
 
     @Override
     public List<Provider> findBy(String attribute, String value) {
-        final String sql = "SELECT id, name, tax_id, contactEmail FROM provider WHERE " + attribute + " = ?";
+
+        String column = ALLOWED_FIELDS.get(attribute);
+        if (column == null) {
+            throw new IllegalArgumentException("Atributo no permitido: " + attribute);
+        }
+
+        final String sql = BASE_SQL + " WHERE LOWER(" + column + ") LIKE LOWER(?)";
+
+        List<Provider> providers = new java.util.ArrayList<>();
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, value);
+            preparedStatement.setString(1, "%" + value + "%");
 
             try (ResultSet result = preparedStatement.executeQuery()) {
-                List<Provider> providers = new java.util.ArrayList<>();
-
                 while (result.next()) {
-                    Provider provider = new Provider(
-                            result.getObject("id", UUID.class).toString(),
-                            result.getObject("name", String.class),
-                            result.getObject("tax_id", String.class),
-                            result.getObject("contactEmail", String.class));
-                    providers.add(provider);
+                    providers.add(mapResultSetToProvider(result));
                 }
-
-                return providers;
             }
-        } catch (SQLException exception) {
-            throw new RuntimeException("Error al buscar proveedores por " + attribute, exception);
+        } catch (Exception e) {
+            throw new RuntimeCryptoException("Error al listar los equipos por el atributo " + attribute);
         }
+
+        return providers;
     }
 
     @Override
     public Provider update(Provider entity) {
-        final String sql = "UPDATE provider SET name = ?, tax_id = ?, contactEmail = ? WHERE id = ?::uuid";
+        final String sql = """
+                        UPDATE provider SET name = ?,
+                        tax_id = ?, contactEmail = ? WHERE id = ?::uuid
+                """;
+        ;
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, entity.getName());

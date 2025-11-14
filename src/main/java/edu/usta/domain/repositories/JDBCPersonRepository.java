@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,6 +19,11 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
 
     private final DatabaseConnection db;
     private final String BASE_SQL = "SELECT * FROM person ";
+
+    private static final Map<String, String> ALLOWED_FIELDS = Map.of(
+            "fullname", "fullname",
+            "document", "document",
+            "role", "role");
 
     public JDBCPersonRepository(DatabaseConnection db) {
         this.db = db;
@@ -99,9 +105,12 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
     @Override
     public List<Person> findBy(String attribute, String value) {
 
-        // Falta el strging column
+        String column = ALLOWED_FIELDS.get(attribute);
+        if (column == null) {
+            throw new IllegalArgumentException("Campo de busqueda no permitido" + attribute);
+        }
 
-        final String sql = BASE_SQL + " WHERE " + attribute + " = ?";
+        final String sql = BASE_SQL + " WHERE LOWER(" + column + ") LIKE LOWER(?)";
 
         List<Person> persons = new ArrayList<>();
 

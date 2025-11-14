@@ -1,4 +1,3 @@
-
 SET search_path TO hospital_inventory, public;
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
@@ -12,7 +11,7 @@ CREATE TYPE equipment_status AS ENUM (
     'UNDER_MAINTENCE',
     'DAMAGED',
     'LOST',
-    'DECOMISSIONED',
+    'DECOMISSIONED',	
     'IN_STORAGE',
     'RESERVED',
     'PENDING_INSPECTION',
@@ -76,7 +75,7 @@ CREATE TABLE IF NOT EXISTS person (
 
 CREATE TABLE IF NOT EXISTS equipment (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  serial      VARCHAR(120)   NOT NULL,
+  serial      VARCHAR(120)   NOT NULL UNIQUE,
   brand       VARCHAR(120)   NOT NULL,
   model       VARCHAR(120)   NOT NULL,
   type        equipment_type NOT NULL,
@@ -84,17 +83,25 @@ CREATE TABLE IF NOT EXISTS equipment (
   provider_id UUID           NULL REFERENCES provider(id)
                                   ON UPDATE CASCADE
                                   ON DELETE SET NULL,
-  iauipment(id) 
-	ON UPDATE CASCADE 
-	ON DELETE CASCADE,
-	risk_class VARCHAR(60) NOT NULL, 
-	calibration_cert VARCHAR(160) NOT NULL
+  image_path  TEXT           NULL,
+  created_at  TIMESTAMPTZ    NOT NULL DEFAULT now(),
+  updated_at  TIMESTAMPTZ    NOT NULL DEFAULT now()
+
 );
 
-CREATE TABLE IF NOT EXISTS tech_equipment (
-	id UUID PRIMARY KEY REFERENCES equipment(id) 
-	ON UPDATE CASCADE 
-	ON DELETE CASCADE,
-	os VARCHAR(60) NOT NULL, 
-	ram_gb INT NOT NULL
+CREATE INDEX IF NOT EXISTS idx_equipment_provider ON equipment(provider_id);
+CREATE INDEX IF NOT EXISTS idx_equipment_type ON equipment(type);
+CREATE INDEX IF NOT EXISTS idx_equipment_state ON equipment(state);
+
+
+CREATE TABLE IF NOT EXISTS 	biomedical_equipment(
+  id UUID PRIMARY KEY REFERENCES equipment(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  risk_class VARCHAR(60) NOT NULL,
+  calibration_cert VARCHAR(160) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS 	tech_equipment(
+  id UUID PRIMARY KEY REFERENCES equipment(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  os VARCHAR(60) NOT NULL,
+  ram_gb int NOT NULL
 );

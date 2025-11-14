@@ -24,7 +24,7 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
                                     SELECT
 
                                         e.id AS e_id,
-                                        e.serial AS e_resial,
+                                        e.serial AS e_serial,
                                         e.brand AS e_brand,
                                         e.model AS e_model,
                                         e.type::text AS e_type,
@@ -216,5 +216,4 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
             throw new RuntimeException("Error al intentar eliminar un equipo", e);
         }
     }
-
 }
