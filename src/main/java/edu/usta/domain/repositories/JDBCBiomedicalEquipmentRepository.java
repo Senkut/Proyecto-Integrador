@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,6 +37,11 @@ public class JDBCBiomedicalEquipmentRepository implements GenericRepository<Biom
                                     FROM biomedical_equipment as be
                                     JOIN equipment as e ON be.id = e.id
             """;
+
+    private static final Map<String, String> ALLOWED_FIELDS = Map.of(
+            "serial", "e.serial",
+            "brand", "e.brand",
+            "riskclass", "be.riskclass");
 
     public JDBCBiomedicalEquipmentRepository(DatabaseConnection db) {
         this.db = db;
@@ -132,14 +138,18 @@ public class JDBCBiomedicalEquipmentRepository implements GenericRepository<Biom
 
     @Override
     public List<BiomedicalEquipment> findBy(String attribute, String value) {
-        // Falta el String column
+        String column = ALLOWED_FIELDS.get(attribute);
+
+        if (column == null) {
+            throw new IllegalArgumentException("Atributo no permitido: " + attribute);
+        }
+
+        final String sql = BASE_SQL + " WHERE LOWER(" + column + ") LIKE LOWER(?)";
 
         List<BiomedicalEquipment> biomedicalEquipments = new ArrayList<>();
-        final String sql = BASE_SQL + " WHERE e." + attribute + " = ?";
-
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, value);
+            preparedStatement.setString(1, "%" + value + "%");
 
             try (ResultSet result = preparedStatement.executeQuery()) {
 

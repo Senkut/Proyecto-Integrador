@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,6 +45,12 @@ public class JDBCTechEquipmentRepository implements GenericRepository<TechEquipm
     public JDBCTechEquipmentRepository(DatabaseConnection db) {
         this.db = db;
     }
+
+    private static final Map<String, String> ALLOWED_FIELDS = Map.of(
+            "serial", "e.serial",
+            "brand", "e.brand",
+            "provider.name", "p.name",
+            "provider.contact", "p.contactEmail");
 
     private TechEquipment mapResultSetToTechEquipment(ResultSet result) throws SQLException {
 
@@ -145,9 +152,12 @@ public class JDBCTechEquipmentRepository implements GenericRepository<TechEquipm
     @Override
     public List<TechEquipment> findBy(String attribute, String value) {
 
-        // Falta el String column
+        String column = ALLOWED_FIELDS.get(attribute);
+        if (column == null) {
+            throw new IllegalArgumentException("Atributo no permitido: " + attribute);
+        }
 
-        final String sql = BASE_SQL + " WHERE " + attribute + " = ?";
+        final String sql = BASE_SQL + " WHERE LOWER(" + column + ") LIKE LOWER(?)";
 
         List<TechEquipment> techEquipments = new java.util.ArrayList<>();
 
@@ -171,23 +181,14 @@ public class JDBCTechEquipmentRepository implements GenericRepository<TechEquipm
     @Override
     public TechEquipment update(TechEquipment entity) {
         final String sql = """
-                UPDATE tech_equipment SET serial = ?, brand = ?,
-                model = ?, type = ?, state = ?, provider = ?,
-                imagePath = ?, os = ?, ramGb = ? WHERE id = ?
+                UPDATE tech_equipment SET os = ?, ram_gb = ? WHERE id = ?::uuid
                 """;
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, entity.getSerial());
-            preparedStatement.setString(2, entity.getBrand());
-            preparedStatement.setString(3, entity.getModel());
-            preparedStatement.setString(4, entity.getType().toString());
-            preparedStatement.setString(5, entity.getState().toString());
-            preparedStatement.setString(6, entity.getProvider().getId());
-            preparedStatement.setString(7, entity.getImagePath());
-            preparedStatement.setString(8, entity.getOs());
-            preparedStatement.setInt(9, entity.getRamGb());
-            preparedStatement.setObject(10, entity.getId());
+            preparedStatement.setString(1, entity.getOs());
+            preparedStatement.setInt(2, entity.getRamGb());
+            preparedStatement.setObject(3, entity.getId());
 
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected == 0) {
