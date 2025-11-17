@@ -34,7 +34,7 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
 
                                         p.id AS p_id,
                                         p.name AS p_name,
-                                        p.taxId AS p_taxId,
+                                        p.tax_id AS p_tax_id,
                                         p.contact_email AS p_contact_email
                                     FROM equipment as e
                                     JOIN provider as p ON p.id = e.provider_id
@@ -55,7 +55,7 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
         Provider provider = new Provider(
                 result.getObject("p_id", UUID.class).toString(),
                 result.getObject("p_name", String.class),
-                result.getObject("p_taxId", String.class),
+                result.getObject("p_tax_id", String.class),
                 result.getObject("p_contact_email", String.class));
 
         return new Equipment(
@@ -66,15 +66,15 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
                 EquipmentType.valueOf(result.getString("type")),
                 EquipmentStatus.valueOf(result.getString("state")),
                 provider,
-                result.getObject("imagePath", String.class));
+                result.getObject("image_path", String.class));
     }
 
     @Override
     public Equipment create(Equipment entity) {
         if (entity.getId() == null) {
             final String sql = """
-                    INSERT INTO equipment (serial, brand, model, type, state, provider_id, imagePath)
-                    VALUES (?, ?, ?, ?::equipment_type, ?::equipment_state, ?::uuid, ?)
+                    INSERT INTO equipment (serial, brand, model, type, state, provider_id, image_path)
+                    VALUES (?, ?, ?, ?::equipment_type, ?::equipment_state, ?::UUID, ?)
                     RETURNING id
                     """;
 
@@ -107,7 +107,7 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
 
     @Override
     public Optional<Equipment> findById(UUID id) {
-        final String sql = BASE_SQL + " WHERE e.id = ?::uuid";
+        final String sql = BASE_SQL + " WHERE e.id = ?::UUID";
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -177,7 +177,7 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
                         UPDATE equipment
                         SET serial = ?,brand = ?,model = ?,
                         type = ?::equipment_type, state = ?::equipment_state,
-                        provider_id = ?::uuid, imagePath = ?
+                        provider_id = ?::UUID, image_path = ?
                         WHERE id = ?::uuid
                 """;
         try (Connection connection = db.getConnection();
@@ -204,7 +204,7 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
 
     @Override
     public boolean delete(UUID id) {
-        final String sql = "DELETE FROM equipment WHERE id = ?::uuid";
+        final String sql = "DELETE FROM equipment WHERE id = ?::UUID";
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

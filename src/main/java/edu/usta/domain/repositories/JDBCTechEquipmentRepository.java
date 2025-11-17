@@ -21,7 +21,7 @@ public class JDBCTechEquipmentRepository implements GenericRepository<TechEquipm
     private final String BASE_SQL = """
                                     SELECT
                                         tc.os as tc_os,
-                                        tc.ramGb as tc_ram_gb,
+                                        tc.ram_gb as tc_ram_gb,
 
                                         e.id AS e_id,
                                         e.serial AS e_serial,
@@ -35,7 +35,7 @@ public class JDBCTechEquipmentRepository implements GenericRepository<TechEquipm
                                         p.id AS p_id,
                                         p.name AS p_name,
                                         p.taxId AS p_taxId,
-                                        p.contactEmail AS p_contact
+                                        p.contact_email AS p_contact_email
 
                                     FROM tech_equipment tc
                                     JOIN equipment e ON e.id = tc.id
@@ -50,7 +50,7 @@ public class JDBCTechEquipmentRepository implements GenericRepository<TechEquipm
             "serial", "e.serial",
             "brand", "e.brand",
             "provider.name", "p.name",
-            "provider.contact", "p.contactEmail");
+            "provider.contact_email", "p.contact_email");
 
     private TechEquipment mapResultSetToTechEquipment(ResultSet result) throws SQLException {
 
@@ -58,7 +58,7 @@ public class JDBCTechEquipmentRepository implements GenericRepository<TechEquipm
                 result.getObject("p_id", String.class),
                 result.getObject("p_name", String.class),
                 result.getObject("p_taxId", String.class),
-                result.getObject("p_contact", String.class));
+                result.getObject("p_contact_email", String.class));
 
         return new TechEquipment(
                 result.getObject("e_id", String.class),
@@ -76,7 +76,7 @@ public class JDBCTechEquipmentRepository implements GenericRepository<TechEquipm
     @Override
     public TechEquipment create(TechEquipment entity) {
         if (entity.getId() == null) {
-            final String sql = "INSERT INTO tech_equipment (serial, brand, model, type, state, provider, imagePath, os, ramGb) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
+            final String sql = "INSERT INTO tech_equipment (serial, brand, model, type, state, provider, image_path, os, ram_gb) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
 
             try (Connection connection = db.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -181,7 +181,7 @@ public class JDBCTechEquipmentRepository implements GenericRepository<TechEquipm
     @Override
     public TechEquipment update(TechEquipment entity) {
         final String sql = """
-                UPDATE tech_equipment SET os = ?, ram_gb = ? WHERE id = ?::uuid
+                UPDATE tech_equipment SET os = ?, ram_gb = ? WHERE id = ?::UUID
                 """;
 
         try (Connection connection = db.getConnection();

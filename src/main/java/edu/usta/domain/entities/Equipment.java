@@ -2,7 +2,6 @@ package edu.usta.domain.entities;
 
 import edu.usta.domain.enums.EquipmentStatus;
 import edu.usta.domain.enums.EquipmentType;
-import edu.usta.infrastructure.config.UUIDGenerator;
 
 /**
  * La clase Equipment representa un objeto de tipo Equipo.
@@ -14,7 +13,6 @@ import edu.usta.infrastructure.config.UUIDGenerator;
  * ya que solo posee atributos constructores,
  * getters and setteers, y el metodo toString()
  * 
- * @author laura-arevalo
  */
 
 public class Equipment {

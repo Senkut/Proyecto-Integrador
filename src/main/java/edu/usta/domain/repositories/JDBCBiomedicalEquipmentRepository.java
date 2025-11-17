@@ -22,8 +22,8 @@ public class JDBCBiomedicalEquipmentRepository implements GenericRepository<Biom
                                     SELECT
 
                                         be.id AS be_id,
-                                        be.riskclass AS be_riskclass,
-                                        be.calibrationCert AS be_calibrationCert,
+                                        be.risk_class AS be_risk_class,
+                                        be.calibration_cert AS be_calibration_cert,
 
                                         e.id AS e_id,
                                         e.serial AS e_serial,
@@ -57,15 +57,15 @@ public class JDBCBiomedicalEquipmentRepository implements GenericRepository<Biom
                 EquipmentStatus.valueOf(result.getObject("e_state", String.class)),
                 null,
                 result.getObject("e_image_path", String.class),
-                result.getObject("be_riskclass", String.class),
-                result.getObject("be_calibrationCert", String.class));
+                result.getObject("be_risk_class", String.class),
+                result.getObject("be_calibration_cert", String.class));
 
     }
 
     @Override
     public BiomedicalEquipment create(BiomedicalEquipment entity) {
         if (entity.getId() == null) {
-            final String sql = "INSERT INTO biomedical_equipment (riskclass, calibrationCert) VALUES (?, ?) RETURNING id";
+            final String sql = "INSERT INTO biomedical_equipment (risk_class, calibration_cert) VALUES (?, ?) RETURNING id";
 
             try (Connection connection = db.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -99,7 +99,7 @@ public class JDBCBiomedicalEquipmentRepository implements GenericRepository<Biom
 
     @Override
     public Optional<BiomedicalEquipment> findById(UUID id) {
-        final String sql = BASE_SQL + " WHERE e.id = ?::uuid";
+        final String sql = BASE_SQL + " WHERE e.id = ?::UUID";
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -167,9 +167,9 @@ public class JDBCBiomedicalEquipmentRepository implements GenericRepository<Biom
     public BiomedicalEquipment update(BiomedicalEquipment entity) {
         final String sql = """
                 UPDATE biomedical_equipment SET
-                    riskclass = ?,
-                    calibrationCert = ?
-                WHERE id = ?::uuid
+                    risk_class = ?,
+                    calibration_cert = ?
+                WHERE id = ?::UUID
                 """;
 
         try (Connection connection = db.getConnection();
@@ -190,7 +190,7 @@ public class JDBCBiomedicalEquipmentRepository implements GenericRepository<Biom
 
     @Override
     public boolean delete(UUID id) {
-        final String sql = "DELETE FROM biomedical_equipment WHERE id = ?::uuid";
+        final String sql = "DELETE FROM biomedical_equipment WHERE id = ?::UUID";
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

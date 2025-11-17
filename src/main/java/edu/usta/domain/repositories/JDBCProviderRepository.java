@@ -21,14 +21,14 @@ public class JDBCProviderRepository implements GenericRepository<Provider> {
                                         id,
                                         name,
                                         tax_id,
-                                        contactEmail
+                                        contact_email
                                     FROM provider
             """;
 
     private static final Map<String, String> ALLOWED_FIELDS = Map.of(
             "name", "name",
             "taxId", "tax_id",
-            "contactEmail", "contactEmail");
+            "contact_email", "contact_email");
 
     public JDBCProviderRepository(DatabaseConnection db) {
         this.db = db;
@@ -39,13 +39,13 @@ public class JDBCProviderRepository implements GenericRepository<Provider> {
                 result.getObject("id", UUID.class).toString(),
                 result.getObject("name", String.class),
                 result.getObject("tax_id", String.class),
-                result.getObject("contactEmail", String.class));
+                result.getObject("contact_email", String.class));
     }
 
     @Override
     public Provider create(Provider entity) {
         if (entity.getId() == null) {
-            final String sql = "INSERT INTO provider (name, tax_id, contactEmail) VALUES (?, ?, ?) RETURNING id";
+            final String sql = "INSERT INTO provider (name, tax_id, contact_email) VALUES (?, ?, ?) RETURNING id";
 
             try (Connection connection = db.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -73,7 +73,7 @@ public class JDBCProviderRepository implements GenericRepository<Provider> {
     @Override
     public Optional<Provider> findById(UUID id) {
 
-        final String sql = BASE_SQL + " WHERE id = ?::uuid";
+        final String sql = BASE_SQL + " WHERE id = ?::UUID";
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -85,7 +85,7 @@ public class JDBCProviderRepository implements GenericRepository<Provider> {
                             result.getObject("id", UUID.class).toString(),
                             result.getObject("name", String.class),
                             result.getObject("tax_id", String.class),
-                            result.getObject("contactEmail", String.class));
+                            result.getObject("contact_email", String.class));
                     return Optional.of(provider);
                 } else {
                     return Optional.empty();
@@ -98,7 +98,7 @@ public class JDBCProviderRepository implements GenericRepository<Provider> {
 
     @Override
     public List<Provider> findAll() {
-        final String sql = "SELECT id, name, tax_id, contactEmail FROM provider";
+        final String sql = "SELECT id, name, tax_id, contact_email FROM provider";
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -111,7 +111,7 @@ public class JDBCProviderRepository implements GenericRepository<Provider> {
                         result.getObject("id", UUID.class).toString(),
                         result.getObject("name", String.class),
                         result.getObject("tax_id", String.class),
-                        result.getObject("contactEmail", String.class));
+                        result.getObject("contact_email", String.class));
                 providers.add(provider);
             }
 
@@ -153,9 +153,9 @@ public class JDBCProviderRepository implements GenericRepository<Provider> {
     public Provider update(Provider entity) {
         final String sql = """
                         UPDATE provider SET name = ?,
-                        tax_id = ?, contactEmail = ? WHERE id = ?::uuid
+                        tax_id = ?, contact_email = ? WHERE id = ?::UUID
                 """;
-        ;
+
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, entity.getName());
@@ -175,7 +175,7 @@ public class JDBCProviderRepository implements GenericRepository<Provider> {
 
     @Override
     public boolean delete(UUID id) {
-        final String sql = "DELETE FROM provider WHERE id = ?::uuid";
+        final String sql = "DELETE FROM provider WHERE id = ?::UUID";
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setObject(1, id);

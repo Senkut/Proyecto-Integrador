@@ -1,7 +1,6 @@
 package edu.usta.domain.repositories;
 
 import java.sql.Connection;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,7 +20,7 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
     private final String BASE_SQL = "SELECT * FROM person ";
 
     private static final Map<String, String> ALLOWED_FIELDS = Map.of(
-            "fullname", "fullname",
+            "full_name", "full_name",
             "document", "document",
             "role", "role");
 
@@ -32,7 +31,7 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
     private Person mapResultSetToPerson(ResultSet result) throws SQLException {
         return new Person(
                 result.getObject("id", String.class),
-                result.getObject("fullname", String.class),
+                result.getObject("full_name", String.class),
                 result.getObject("document", String.class),
                 result.getObject("role", Role.class));
     }
@@ -40,7 +39,7 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
     @Override
     public Person create(Person entity) {
         if (entity.getId() == null) {
-            final String sql = "INSERT INTO person (fullname, document, role) VALUES (?, ?, ?) RETURNING id";
+            final String sql = "INSERT INTO person (full_name, document, role) VALUES (?, ?, ?) RETURNING id";
 
             try (Connection connection = db.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -65,7 +64,7 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
 
     @Override
     public Optional<Person> findById(UUID id) {
-        final String sql = BASE_SQL + " WHERE id = ?::uuid";
+        final String sql = BASE_SQL + " WHERE id = ?::UUID";
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -132,7 +131,7 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
 
     @Override
     public Person update(Person entity) {
-        final String sql = "UPDATE person SET fullname = ?, document = ?, role = ? WHERE id = ?::uuid";
+        final String sql = "UPDATE person SET full_name = ?, document = ?, role = ? WHERE id = ?::UUID";
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, entity.getFullname());
@@ -152,7 +151,7 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
 
     @Override
     public boolean delete(UUID id) {
-        final String sql = "DELETE FROM person WHERE id = ?::uuid";
+        final String sql = "DELETE FROM person WHERE id = ?::UUID";
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setObject(1, id);
