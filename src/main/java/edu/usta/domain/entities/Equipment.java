@@ -13,6 +13,7 @@ import edu.usta.domain.enums.EquipmentType;
  * ya que solo posee atributos constructores,
  * getters and setteers, y el metodo toString()
  * 
+ * @author laura-arevalo
  */
 
 public class Equipment {

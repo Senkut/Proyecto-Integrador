@@ -18,7 +18,7 @@ INSERT INTO person(full_name, document, role) VALUES ('Miguel Ángel Duarte', 'C
 INSERT INTO person(full_name, document, role) VALUES ('Carolina Ramírez López', 'CC-1009876543', 'BOSS');
 INSERT INTO person(full_name, document, role) VALUES ('Andrés Felipe Gutiérrez', 'CC-1034567890', 'DOCTOR');
 INSERT INTO person(full_name, document, role) VALUES ('Marcela Jiménez Rojas', 'CC-1045678901', 'NURSE');
-INSERT INTO person(full_name, document, role) VALUES ('Santiago Herrera Díaz', 'CC-1056789012', 'MANTENANCE_MAN');
+INSERT INTO person(full_name, document, role) VALUES ('Santiago Herrera Díaz', 'CC-1056789012', 'MAINTENANCE_MAN');
 
 -------------
 SELECT * FROM provider

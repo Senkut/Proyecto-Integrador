@@ -19,25 +19,26 @@ import edu.usta.domain.enums.EquipmentType;
 import edu.usta.infrastructure.db.DatabaseConnection;
 
 public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
+
     private final DatabaseConnection db;
+
     private final String BASE_SQL = """
-                                    SELECT
+            SELECT
+                e.id AS e_id,
+                e.serial AS e_serial,
+                e.brand AS e_brand,
+                e.model AS e_model,
+                e.type::text AS e_type,
+                e.state::text AS e_state,
+                e.provider_id AS e_provider_id,
+                e.image_path AS e_image_path,
 
-                                        e.id AS e_id,
-                                        e.serial AS e_serial,
-                                        e.brand AS e_brand,
-                                        e.model AS e_model,
-                                        e.type::text AS e_type,
-                                        e.state::text AS e_state,
-                                        e.provider_id AS e_provider_id,
-                                        e.image_path AS e_image_path,
-
-                                        p.id AS p_id,
-                                        p.name AS p_name,
-                                        p.tax_id AS p_tax_id,
-                                        p.contact_email AS p_contact_email
-                                    FROM equipment as e
-                                    JOIN provider as p ON p.id = e.provider_id
+                p.id AS p_id,
+                p.name AS p_name,
+                p.tax_id AS p_tax_id,
+                p.contact_email AS p_contact_email
+            FROM equipment AS e
+            JOIN provider AS p ON p.id = e.provider_id
             """;
 
     private static final Map<String, String> ALLOWED_FIELDS = Map.of(
@@ -50,36 +51,41 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
         this.db = db;
     }
 
+    // --------------- MAPEO CORREGIDO ---------------
     private Equipment mapResultSetToEquipment(ResultSet result) throws SQLException {
 
         Provider provider = new Provider(
                 result.getObject("p_id", UUID.class).toString(),
-                result.getObject("p_name", String.class),
-                result.getObject("p_tax_id", String.class),
-                result.getObject("p_contact_email", String.class));
+                result.getString("p_name"),
+                result.getString("p_tax_id"),
+                result.getString("p_contact_email"));
 
         return new Equipment(
-                result.getObject("id", UUID.class).toString(),
-                result.getObject("serial", String.class),
-                result.getObject("brand", String.class),
-                result.getObject("model", String.class),
-                EquipmentType.valueOf(result.getString("type")),
-                EquipmentStatus.valueOf(result.getString("state")),
+                result.getObject("e_id", UUID.class).toString(),
+                result.getString("e_serial"),
+                result.getString("e_brand"),
+                result.getString("e_model"),
+                EquipmentType.valueOf(result.getString("e_type")),
+                EquipmentStatus.valueOf(result.getString("e_state")),
                 provider,
-                result.getObject("image_path", String.class));
+                result.getString("e_image_path"));
     }
 
+    // ------------------ CREATE ------------------
     @Override
     public Equipment create(Equipment entity) {
         if (entity.getId() == null) {
+
             final String sql = """
-                    INSERT INTO equipment (serial, brand, model, type, state, provider_id, image_path)
-                    VALUES (?, ?, ?, ?::equipment_type, ?::equipment_state, ?::UUID, ?)
+                    INSERT INTO equipment
+                    (serial, brand, model, type, state, provider_id, image_path)
+                    VALUES (?, ?, ?, ?::equipment_type, ?::equipment_status, ?::UUID, ?)
                     RETURNING id
                     """;
 
             try (Connection connection = db.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
                 preparedStatement.setString(1, entity.getSerial());
                 preparedStatement.setString(2, entity.getBrand());
                 preparedStatement.setString(3, entity.getModel());
@@ -91,26 +97,37 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
                 try (ResultSet result = preparedStatement.executeQuery()) {
                     if (result.next()) {
                         UUID id = result.getObject("id", UUID.class);
-                        return new Equipment(id.toString(), entity.getSerial(), entity.getBrand(),
-                                entity.getModel(), entity.getType(), entity.getState(),
-                                entity.getProvider(), entity.getImagePath());
+
+                        return new Equipment(
+                                id.toString(),
+                                entity.getSerial(),
+                                entity.getBrand(),
+                                entity.getModel(),
+                                entity.getType(),
+                                entity.getState(),
+                                entity.getProvider(),
+                                entity.getImagePath());
                     }
                     throw new SQLException("No ID returned");
                 }
+
             } catch (SQLException exception) {
                 throw new RuntimeException("Error inserting equipment", exception);
             }
+
         } else {
-            throw new RuntimeException("This method only create a new Entity, for update, use the update method");
+            throw new RuntimeException("This method only create a new Entity, for update use update()");
         }
     }
 
+    // ------------------ FIND BY ID ------------------
     @Override
     public Optional<Equipment> findById(UUID id) {
         final String sql = BASE_SQL + " WHERE e.id = ?::UUID";
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
             preparedStatement.setObject(1, id);
 
             try (ResultSet result = preparedStatement.executeQuery()) {
@@ -120,35 +137,40 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
             }
 
             return Optional.empty();
+
         } catch (Exception e) {
-            throw new RuntimeException("Error al buscar el equipo con el id:" + id, e);
+            throw new RuntimeException("Error al buscar el equipo con el id: " + id, e);
         }
     }
 
+    // ------------------ FIND ALL ------------------
     @Override
     public List<Equipment> findAll() {
         List<Equipment> equipments = new ArrayList<>();
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(BASE_SQL)) {
-            try (ResultSet result = preparedStatement.executeQuery()) {
 
+            try (ResultSet result = preparedStatement.executeQuery()) {
                 while (result.next()) {
                     equipments.add(mapResultSetToEquipment(result));
                 }
             }
+
             return equipments;
+
         } catch (Exception e) {
             throw new RuntimeCryptoException("Error al listar los equipos");
         }
     }
 
+    // ------------------ FIND BY FILTER ------------------
     @Override
     public List<Equipment> findBy(String attribute, String value) {
         String column = ALLOWED_FIELDS.get(attribute);
 
         if (column == null) {
-            throw new IllegalArgumentException("Campo de busqueda no permitido " + attribute);
+            throw new IllegalArgumentException("Campo de búsqueda no permitido: " + attribute);
         }
 
         final String sql = BASE_SQL + " WHERE LOWER(" + column + ") LIKE LOWER(?)";
@@ -157,6 +179,7 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
             preparedStatement.setString(1, "%" + value + "%");
 
             try (ResultSet result = preparedStatement.executeQuery()) {
@@ -164,54 +187,66 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
                     equipments.add(mapResultSetToEquipment(result));
                 }
             }
+
         } catch (Exception e) {
-            throw new RuntimeCryptoException("Error al listar los equipos por el atributo " + attribute);
+            throw new RuntimeCryptoException("Error al filtrar equipos por: " + attribute);
         }
 
         return equipments;
     }
 
+    // ------------------ UPDATE ------------------
     @Override
     public Equipment update(Equipment entity) {
+
         final String sql = """
-                        UPDATE equipment
-                        SET serial = ?,brand = ?,model = ?,
-                        type = ?::equipment_type, state = ?::equipment_state,
-                        provider_id = ?::UUID, image_path = ?
-                        WHERE id = ?::uuid
+                UPDATE equipment
+                SET serial = ?, brand = ?, model = ?,
+                    type = ?::equipment_type,
+                    state = ?::equipment_status,
+                    provider_id = ?::UUID,
+                    image_path = ?
+                WHERE id = ?::UUID
                 """;
+
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
             preparedStatement.setString(1, entity.getSerial());
             preparedStatement.setString(2, entity.getBrand());
             preparedStatement.setString(3, entity.getModel());
             preparedStatement.setString(4, entity.getType().toString());
             preparedStatement.setString(5, entity.getState().toString());
-            preparedStatement.setObject(6, entity.getProvider().getId());
+            preparedStatement.setString(6, entity.getProvider().getId());
             preparedStatement.setString(7, entity.getImagePath());
             preparedStatement.setObject(8, entity.getId());
 
             int rows = preparedStatement.executeUpdate();
+
             if (rows == 0) {
-                throw new RuntimeException("No se encontró el equipo para actualiza");
+                throw new RuntimeException("No se encontró el equipo a actualizar");
             }
 
             return entity;
+
         } catch (SQLException e) {
             throw new RuntimeException("Error al intentar actualizar un equipo", e);
         }
     }
 
+    // ------------------ DELETE ------------------
     @Override
     public boolean delete(UUID id) {
         final String sql = "DELETE FROM equipment WHERE id = ?::UUID";
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
             preparedStatement.setString(1, id.toString());
 
             int rows = preparedStatement.executeUpdate();
             return rows > 0;
+
         } catch (SQLException e) {
             throw new RuntimeException("Error al intentar eliminar un equipo", e);
         }
