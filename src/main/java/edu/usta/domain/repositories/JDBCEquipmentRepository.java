@@ -51,7 +51,6 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
         this.db = db;
     }
 
-    // --------------- MAPEO CORREGIDO ---------------
     private Equipment mapResultSetToEquipment(ResultSet result) throws SQLException {
 
         Provider provider = new Provider(
@@ -71,7 +70,6 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
                 result.getString("e_image_path"));
     }
 
-    // ------------------ CREATE ------------------
     @Override
     public Equipment create(Equipment entity) {
         if (entity.getId() == null) {
@@ -120,7 +118,6 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
         }
     }
 
-    // ------------------ FIND BY ID ------------------
     @Override
     public Optional<Equipment> findById(UUID id) {
         final String sql = BASE_SQL + " WHERE e.id = ?::UUID";
@@ -143,7 +140,6 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
         }
     }
 
-    // ------------------ FIND ALL ------------------
     @Override
     public List<Equipment> findAll() {
         List<Equipment> equipments = new ArrayList<>();
@@ -164,7 +160,6 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
         }
     }
 
-    // ------------------ FIND BY FILTER ------------------
     @Override
     public List<Equipment> findBy(String attribute, String value) {
         String column = ALLOWED_FIELDS.get(attribute);
@@ -195,7 +190,6 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
         return equipments;
     }
 
-    // ------------------ UPDATE ------------------
     @Override
     public Equipment update(Equipment entity) {
 
@@ -234,7 +228,6 @@ public class JDBCEquipmentRepository implements GenericRepository<Equipment> {
         }
     }
 
-    // ------------------ DELETE ------------------
     @Override
     public boolean delete(UUID id) {
         final String sql = "DELETE FROM equipment WHERE id = ?::UUID";
