@@ -32,14 +32,14 @@ Nos pudimos dar cuenta de que cuando la información está dispersa o no tiene u
 Todo esto generaba procesos lentos, confusos y poco eficientes. Por eso surgió la necesidad de crear un sistema más organizado, que permitiera centralizar la información y mejorar la manera en que se gestiona. Con este proyecto, la idea es resolver esos inconvenientes para que los datos sean más accesibles, estén mejor estructurados y se puedan consultar sin complicaciones.
 
 ## LISTADO DE HERRAMIENTAS USADAS
-•	Java 17 (Lógica de negocio y estructura del proyecto).
-•	Maven (Gestión de dependencias con el archivo pom.xml).
-•	PostgreSQL (Base de datos relacional).
-•	SQL (Uso de archivos DDL y DML para creación y carga de tablas).
-•	Draw.io (Diseño del diagrama entidad-relación).
-•	Entidades y repositorios (Arquitectura de dominio con clases como Person, Provider, Equipment, etc.). 
-•	Git / GitHub (Control de versiones).
-•	VS Code (Entorno de desarrollo).
+- Java 17 (Lógica de negocio y estructura del proyecto).
+- Maven (Gestión de dependencias con el archivo pom.xml).
+- PostgreSQL (Base de datos relacional).
+- SQL (Uso de archivos DDL y DML para creación y carga de tablas).
+- Draw.io (Diseño del diagrama entidad-relación).
+- Entidades y repositorios (Arquitectura de dominio con clases como Person, Provider, Equipment, etc.). 
+- Git / GitHub (Control de versiones).
+- VS Code (Entorno de desarrollo).
 
 ## SOLUCIÓN APLICADA EN EL PROYECTO
 La solución que implementamos en el proyecto integrador se basó en organizar toda la información dentro de un sistema mucho más claro y estructurado. Para eso, primero se definió las entidades principales como los equipos, los proveedores y las personas, asegurándonos de que cada una tuviera sus atributos correctos y que pudieran relacionarse entre sí sin generar confusión.
