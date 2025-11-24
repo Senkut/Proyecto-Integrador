@@ -1,6 +1,10 @@
 # Integrative Project
 
-**Integrantes:** 1- 5 personas
+**Integrantes:**
+- Luis Gabriel Cely Niño
+- Julian Alegrandro Gil
+- Laura Sofia Lopez Mora
+- Laura Valentina Arevalo Sierra
 
 **Asignatura:** Programación Orientada a Objetos, bases de datos
 
