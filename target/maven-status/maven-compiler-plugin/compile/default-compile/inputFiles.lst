@@ -1,3 +1,4 @@
+C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\application\usecases\GenericUseCases.java
 C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\domain\entities\BiomedicalEquipment.java
 C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\domain\entities\Equipment.java
 C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\domain\entities\Person.java
@@ -6,5 +7,13 @@ C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\ma
 C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\domain\enums\EquipmentStatus.java
 C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\domain\enums\EquipmentType.java
 C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\domain\enums\Role.java
+C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\domain\repositories\GenericRepository.java
+C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\domain\repositories\JDBCBiomedicalEquipmentRepository.java
+C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\domain\repositories\JDBCEquipmentRepository.java
+C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\domain\repositories\JDBCPersonRepository.java
+C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\domain\repositories\JDBCProviderRepository.java
+C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\domain\repositories\JDBCTechEquipmentRepository.java
 C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\infrastructure\config\UUIDGenerator.java
+C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\infrastructure\db\DatabaseConnection.java
 C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\Main.java
+C:\Users\Gaboc\Documentos\Programacion\Creaciones\POO\integrative_project\src\main\java\edu\usta\ui\MainController.java

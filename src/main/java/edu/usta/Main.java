@@ -1,60 +1,53 @@
 package edu.usta;
 
-import java.util.Optional;
-import java.util.UUID;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-import edu.usta.application.usecases.GenericUseCases;
-import edu.usta.domain.entities.Equipment;
-import edu.usta.domain.entities.Provider;
-import edu.usta.domain.enums.EquipmentStatus;
-import edu.usta.domain.enums.EquipmentType;
-import edu.usta.domain.repositories.JDBCEquipmentRepository;
-import edu.usta.infrastructure.config.UUIDGenerator;
-import edu.usta.infrastructure.db.DatabaseConnection;
+public class Main extends Application {
 
-public class Main {
-    public static void main(String[] args) {
+    @Override
+    public void start(Stage primaryStage) {
+        try {
+            System.out.println("🔍 Buscando archivo FXML...");
 
-        JDBCEquipmentRepository equipmentRepository = new JDBCEquipmentRepository(DatabaseConnection.getInstance());
+            // Cargar el archivo FXML desde views/MainView.fxml
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/MainView.fxml"));
 
-        GenericUseCases<Equipment> useCases = new GenericUseCases<>(equipmentRepository);
+            System.out.println("📂 Cargando FXML...");
+            Parent root = loader.load();
 
-        Equipment equipment = createEquipment(useCases);
+            System.out.println("✅ FXML cargado exitosamente!");
 
-        findEquipmentById(useCases, UUIDGenerator.parseUUID(equipment.getId()));
-    }
+            // Configurar la escena
+            Scene scene = new Scene(root, 600, 700);
 
-    public static Equipment createEquipment(GenericUseCases<Equipment> useCase) {
+            // Configurar el stage
+            primaryStage.setTitle("Equipment Manager - Formulario");
+            primaryStage.setScene(scene);
+            primaryStage.setResizable(false);
+            primaryStage.show();
 
-        Provider provider001 = new Provider(
-                "531d6c84-8485-4363-80ae-712a6daec2b9",
-                "Medical SAS",
-                "NIT-900123456789",
-                "contact@meditech.com");
+            System.out.println("✅ Aplicación JavaFX iniciada correctamente!");
 
-        Equipment equipment001 = new Equipment(
-                "Activo001",
-                "Dell",
-                "OptiPlex",
-                EquipmentType.OFFICE,
-                EquipmentStatus.IN_USE,
-                provider001,
-                "https://m.media-amazon.com/images/I/610FOSnO-fL.jpg");
+        } catch (Exception e) {
+            System.err.println("❌ ERROR al cargar la aplicación:");
+            System.err.println("Detalles del error:");
+            e.printStackTrace();
 
-        Equipment saved = useCase.create(equipment001);
-        System.out.println(">>> Equipo Creado");
-        return saved;
-    }
-
-    public static void findEquipmentById(GenericUseCases<Equipment> useCase, UUID id) {
-
-        Optional<Equipment> equipmentFound = useCase.findById(id);
-
-        if (equipmentFound.isPresent()) {
-            System.out.println(">>> Se ha encontrado un registro");
-            System.out.println(equipmentFound.get());
-        } else {
-            System.out.println(">>> No se ha encontrado el registro");
+            // Información adicional para debugging
+            System.err.println("\n📋 Verifica:");
+            System.err.println("1. Que MainView.fxml esté en: src/main/resources/views/MainView.fxml");
+            System.err.println("2. Que MainController.java esté en: src/main/java/edu/usta/ui/MainController.java");
+            System.err.println("3. Que el package del controller sea: package edu.usta.ui;");
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println("🚀 Iniciando aplicación JavaFX...");
+        System.out.println("📍 Working directory: " + System.getProperty("user.dir"));
+        launch(args);
     }
 }

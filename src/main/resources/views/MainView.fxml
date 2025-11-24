@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="edu.usta.ui.MainController"
+      spacing="10"
+      style="-fx-background-color: #f5f5f5;">
+    
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    
+    <!-- Título -->
+    <Label text="Equipment Manager - Formulario de Registro"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;">
+        <VBox.margin>
+            <Insets bottom="10"/>
+        </VBox.margin>
+    </Label>
+    
+    <Separator/>
+    
+    <!-- ID Generado -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="ID (Auto-generado):" style="-fx-font-weight: bold;"/>
+        <Label fx:id="lblGeneratedId" text="" 
+               style="-fx-text-fill: #27ae60; -fx-font-family: monospace;"/>
+    </HBox>
+    
+    <!-- Nombre -->
+    <Label text="Nombre del Equipo *" style="-fx-font-weight: bold;"/>
+    <TextField fx:id="txtName" promptText="Ingrese el nombre del equipo"/>
+    
+    <!-- Marca -->
+    <Label text="Marca *" style="-fx-font-weight: bold;"/>
+    <TextField fx:id="txtBrand" promptText="Ingrese la marca"/>
+    
+    <!-- Modelo -->
+    <Label text="Modelo *" style="-fx-font-weight: bold;"/>
+    <TextField fx:id="txtModel" promptText="Ingrese el modelo"/>
+    
+    <!-- Descripción -->
+    <Label text="Descripción *" style="-fx-font-weight: bold;"/>
+    <TextArea fx:id="txtDescription" 
+              promptText="Ingrese una descripción detallada"
+              prefRowCount="3"
+              wrapText="true"/>
+    
+    <!-- Tipo de Equipo -->
+    <Label text="Tipo de Equipo *" style="-fx-font-weight: bold;"/>
+    <ComboBox fx:id="cmbEquipmentType" 
+              promptText="Seleccione el tipo de equipo"
+              prefWidth="300"/>
+    
+    <!-- Campo Especial (Dinámico) -->
+    <Label fx:id="lblSpecialField" text="Campo especial:" style="-fx-font-weight: bold;"/>
+    <TextField fx:id="txtSpecialField" promptText="Depende del tipo seleccionado"/>
+    
+    <!-- Botones -->
+    <HBox spacing="10" alignment="CENTER">
+        <VBox.margin>
+            <Insets top="10"/>
+        </VBox.margin>
+        
+        <Button fx:id="btnSave" 
+                text="Guardar Equipment"
+                onAction="#handleSave"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;"
+                prefWidth="200">
+            <font>
+                <Font size="14"/>
+            </font>
+        </Button>
+        
+        <Button fx:id="btnClear" 
+                text="Limpiar Formulario"
+                onAction="#handleClear"
+                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold;"
+                prefWidth="200">
+            <font>
+                <Font size="14"/>
+            </font>
+        </Button>
+    </HBox>
+    
+    <Separator>
+        <VBox.margin>
+            <Insets top="10"/>
+        </VBox.margin>
+    </Separator>
+    
+    <!-- Área de Salida -->
+    <Label text="Registros Guardados:" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+    <TextArea fx:id="txtOutput" 
+            editable="false"
+            prefRowCount="8"
+            wrapText="true"
+            style="-fx-control-inner-background: #ecf0f1;"/>
+    
+</VBox>
