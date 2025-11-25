@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane prefWidth="560" prefHeight="520"
+            style="-fx-background-color: #f5f5f5;"
+            xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="edu.usta.ui.BiomedicalController">
+
+    <!-- Título -->
+    <top>
+        <Label text="Registro de Equipo Biomédico"
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #333;">
+            <BorderPane.margin>
+                <Insets top="25" bottom="15" left="20" right="20"/>
+            </BorderPane.margin>
+        </Label>
+    </top>
+
+    <!-- Contenido principal -->
+    <center>
+        <GridPane hgap="12" vgap="18" alignment="CENTER"
+                  style="-fx-background-color: white; -fx-padding: 30; -fx-border-radius: 10; -fx-background-radius: 10;">
+            <padding>
+                <Insets top="20" bottom="20" left="40" right="40"/>
+            </padding>
+
+            <!-- Nombre -->
+            <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                   style="-fx-font-size: 14px; -fx-text-fill: #444;"/>
+            <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                       prefWidth="280" promptText="Ingrese el nombre"/>
+
+            <!-- Fabricante -->
+            <Label text="Fabricante:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                   style="-fx-font-size: 14px; -fx-text-fill: #444;"/>
+            <TextField fx:id="manufacturerField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                       prefWidth="280" promptText="Ingrese el fabricante"/>
+
+            <!-- Fecha -->
+            <Label text="Fecha de Fabricación:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                   style="-fx-font-size: 14px; -fx-text-fill: #444;"/>
+            <DatePicker fx:id="fabDateField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                        prefWidth="280" promptText="Seleccione la fecha"/>
+
+            <!-- Descripción -->
+            <Label text="Descripción:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                   style="-fx-font-size: 14px; -fx-text-fill: #444;"/>
+            <TextArea fx:id="descriptionField" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                      prefWidth="280" prefHeight="100"
+                      promptText="Ingrese la descripción"
+                      wrapText="true"
+                      style="-fx-focus-color: #4e73df;"/>
+
+            <!-- Botones -->
+            <HBox spacing="15" alignment="CENTER"
+                  GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2"
+                  style="-fx-padding: 20 0 0 0;">
+                <Button text="Guardar" onAction="#saveBio"
+                        prefWidth="120"
+                        style="-fx-font-size: 14px; -fx-background-color: #4e73df; -fx-text-fill: white; -fx-background-radius: 8;" />
+                <Button text="Cancelar" onAction="#cancel"
+                        prefWidth="120"
+                        style="-fx-font-size: 14px; -fx-background-color: #999; -fx-text-fill: white; -fx-background-radius: 8;" />
+            </HBox>
+        </GridPane>
+    </center>
+
+</BorderPane>
