@@ -30,7 +30,7 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
 
     private Person mapResultSetToPerson(ResultSet result) throws SQLException {
         return new Person(
-                result.getObject("id", String.class),
+                result.getObject("id", UUID.class).toString(),
                 result.getObject("full_name", String.class),
                 result.getObject("document", String.class),
                 result.getObject("role", Role.class));
@@ -68,15 +68,14 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setObject(1, id);
+
+            preparedStatement.setString(1, id.toString());
 
             try (ResultSet result = preparedStatement.executeQuery()) {
                 if (result.next()) {
-                    Person person = mapResultSetToPerson(result);
-                    return Optional.of(person);
-                } else {
-                    return Optional.empty();
+                    return Optional.of(mapResultSetToPerson(result));
                 }
+                return Optional.empty();
             }
         } catch (SQLException exception) {
             throw new RuntimeException("Error finding person by ID", exception);
@@ -98,6 +97,7 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
         } catch (SQLException exception) {
             throw new RuntimeException("Error retrieving all persons", exception);
         }
+
         return persons;
     }
 
@@ -106,7 +106,7 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
 
         String column = ALLOWED_FIELDS.get(attribute);
         if (column == null) {
-            throw new IllegalArgumentException("Campo de busqueda no permitido" + attribute);
+            throw new IllegalArgumentException("Campo de busqueda no permitido: " + attribute);
         }
 
         final String sql = BASE_SQL + " WHERE LOWER(" + column + ") LIKE LOWER(?)";
@@ -115,12 +115,12 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
 
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, value);
+
+            preparedStatement.setString(1, "%" + value + "%");
 
             try (ResultSet result = preparedStatement.executeQuery()) {
                 while (result.next()) {
-                    Person person = mapResultSetToPerson(result);
-                    persons.add(person);
+                    persons.add(mapResultSetToPerson(result));
                 }
             }
         } catch (SQLException exception) {

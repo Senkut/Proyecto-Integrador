@@ -62,7 +62,7 @@ public class ProviderController {
 
             Provider saved = repository.create(provider);
 
-            // Alerta de éxito
+            // Alerta de exito
             showInfo("✓ Registro Exitoso",
                     "El proveedor se ha registrado correctamente.\n\n" +
                             "ID generado: " + saved.getId());

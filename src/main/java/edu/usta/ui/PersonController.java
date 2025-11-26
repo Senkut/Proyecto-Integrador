@@ -62,7 +62,7 @@ public class PersonController {
             Person saved = repository.create(person);
 
             // Alerta de éxito
-            showInfo("✓ Registro Exitoso",
+            showInfo(" Registro Exitoso",
                     "La persona se ha registrado correctamente.\n\n" +
                             "ID generado: " + saved.getId());
 
