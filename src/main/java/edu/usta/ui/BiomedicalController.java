@@ -1,5 +1,6 @@
 package edu.usta.ui;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import edu.usta.domain.entities.BiomedicalEquipment;
@@ -9,11 +10,17 @@ import edu.usta.domain.enums.EquipmentType;
 import edu.usta.domain.repositories.JDBCBiomedicalEquipmentRepository;
 import edu.usta.domain.repositories.JDBCProviderRepository;
 import edu.usta.infrastructure.db.DatabaseConnection;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
 
 public class BiomedicalController {
 
@@ -125,11 +132,19 @@ public class BiomedicalController {
                     calibrationCertField.getText().trim());
 
             BiomedicalEquipment saved = repository.create(equipment);
-            showInfo("Éxito", "Equipo biomédico insertado con ID: " + saved.getId());
+
+            // Alerta de éxito
+            showInfo("✓ Registro Exitoso",
+                    "El equipo biomédico se ha registrado correctamente.\n\n" +
+                            "ID generado: " + saved.getId());
+
             clearFields();
 
         } catch (Exception e) {
-            showError("Error al guardar", e.getMessage());
+            // Alerta de error
+            showError("✗ Error al Guardar",
+                    "No se pudo registrar el equipo biomédico.\n\n" +
+                            "Detalle: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -254,6 +269,22 @@ public class BiomedicalController {
     @FXML
     private void onCancelar() {
         clearFields();
+        showInfo("Cancelado", "Los campos han sido limpiados");
+    }
+
+    // ------------------------
+    // VOLVER AL MENÚ PRINCIPAL
+    // ------------------------
+    @FXML
+    private void goToMainMenu(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/views/MainView.fxml"));
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(
+                getClass().getResource("/css/mainmenu.css").toExternalForm());
+
+        Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        window.setScene(scene);
+        window.show();
     }
 
     // ------------------------

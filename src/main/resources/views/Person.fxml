@@ -1,57 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.shape.Rectangle?>
 
-<BorderPane prefWidth="900" prefHeight="650"
+<BorderPane prefWidth="1280" prefHeight="720"
             xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="edu.usta.ui.PersonController"
-            style="-fx-background-color: #f0f4ff;">
+            style="-fx-background-color: linear-gradient(to bottom, #e8ecff, #ffffff);">
 
-
-    <!-- 🔵 Botón regresar arriba -->
+    <!-- HEADER -->
     <top>
-        <HBox style="-fx-padding: 20;">
-            <Button text="⮜ Regresar"
-                    onAction="#goBack"
-                    style="-fx-background-color: #dddddd;
-                           -fx-background-radius: 10;
-                           -fx-font-size: 14px;
-                           -fx-text-fill: black;"/>
-        </HBox>
+        <VBox alignment="CENTER" spacing="10">
+            <padding><Insets top="35" bottom="20"/></padding>
+
+            <Label text="Registro de Persona"
+                   style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2d2f66;"/>
+
+            <Rectangle width="320" height="4"
+                       style="-fx-fill: #6a73ff; -fx-arc-width: 20; -fx-arc-height: 20;"/>
+        </VBox>
     </top>
 
-
+    <!-- CONTENEDOR CENTRAL -->
     <center>
-        <GridPane hgap="20" vgap="25" alignment="CENTER"
-                  style="-fx-background-color: white; -fx-background-radius: 15;
-                         -fx-padding: 40;">
-            
-            <Label text="Nombre completo:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-            <TextField fx:id="fullnameField" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                       prefWidth="300" promptText="Ingrese el nombre completo"/>
+        <VBox alignment="CENTER">
 
-            <Label text="Documento:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-            <TextField fx:id="documentField" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                       prefWidth="300" promptText="Ingrese documento"/>
+            <VBox spacing="30"
+                  alignment="CENTER"
+                  style="-fx-background-color: #ffffff;
+                         -fx-background-radius: 25;
+                         -fx-padding: 40;
+                         -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.25), 20, 0, 0, 10);">
 
-            <Label text="Rol:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-            <ComboBox fx:id="roleField" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                      prefWidth="300"/>
+                <!-- FORMULARIO -->
+                <GridPane hgap="25" vgap="20" alignment="CENTER">
+                    <padding><Insets left="50" right="50"/></padding>
 
-            <Button text="Guardar" onAction="#savePerson"
-                    GridPane.rowIndex="3" GridPane.columnIndex="0"
-                    style="-fx-background-color: #5a7dff; -fx-text-fill: white;"/>
+                    <!-- NOMBRE COMPLETO -->
+                    <Label text="Nombre Completo:" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                           style="-fx-font-size: 14px; -fx-text-fill: #333;"/>
+                    <TextField fx:id="fullnameField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                               prefWidth="300" promptText="Ingrese el nombre completo"/>
 
-            <Button text="Cancelar" onAction="#cancel"
-                    GridPane.rowIndex="3" GridPane.columnIndex="1"
-                    style="-fx-background-color: #ff5a5a; -fx-text-fill: white;"/>
-        </GridPane>
+                    <!-- DOCUMENTO -->
+                    <Label text="Documento:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                           style="-fx-font-size: 14px; -fx-text-fill: #333;"/>
+                    <TextField fx:id="documentField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                               prefWidth="300" promptText="Ingrese documento"/>
+
+                    <!-- ROL -->
+                    <Label text="Rol:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                           style="-fx-font-size: 14px; -fx-text-fill: #333;"/>
+                    <ComboBox fx:id="roleField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                              prefWidth="300"/>
+
+                    <!-- BOTONES -->
+                    <HBox spacing="25" alignment="CENTER"
+                          GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="2">
+
+                        <Button text="Guardar" onAction="#savePerson" prefWidth="160" prefHeight="45"
+                                style="-fx-background-color: linear-gradient(to right,#6a73ff,#9a63ff);
+                                       -fx-background-radius: 20; -fx-text-fill: white; -fx-font-size: 16px;"/>
+
+                        <Button text="Cancelar" onAction="#cancel" prefWidth="160" prefHeight="45"
+                                style="-fx-background-color: #e2e2e2; -fx-background-radius: 20;
+                                       -fx-text-fill:#333; -fx-font-size: 16px;"/>
+
+                        <Button text="Volver al Menú" onAction="#goToMainMenu" prefWidth="190" prefHeight="45"
+                                style="-fx-background-color: linear-gradient(to right,#ff6565,#ff8585);
+                                       -fx-background-radius: 20; -fx-text-fill: white; -fx-font-size: 16px;"/>
+                    </HBox>
+
+                </GridPane>
+
+            </VBox>
+        </VBox>
     </center>
 
 </BorderPane>

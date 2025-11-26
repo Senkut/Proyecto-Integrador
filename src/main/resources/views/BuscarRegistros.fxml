@@ -1,71 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.shape.Rectangle?>
 
 <BorderPane prefWidth="1280" prefHeight="720"
-            style="-fx-background-color: linear-gradient(to bottom, #f0f4ff, #ffffff);"
             xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="edu.usta.ui.BuscarRegistrosController">
+            fx:controller="edu.usta.ui.BuscarRegistrosController"
+            style="-fx-background-color: linear-gradient(to bottom, #e8ecff, #ffffff);">
 
     <!-- HEADER -->
     <top>
-        <VBox spacing="10" alignment="CENTER">
-            <padding>
-                <Insets top="35" bottom="20"/>
-            </padding>
+        <VBox alignment="CENTER" spacing="10">
+            <padding><Insets top="35" bottom="20"/></padding>
 
             <Label text="Buscar Registros"
-                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                   style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2d2f66;"/>
 
-            <Rectangle width="300" height="3"
-                       style="-fx-fill: #4a4eff; -fx-arc-height: 10; -fx-arc-width: 10;"/>
+            <Rectangle width="320" height="4"
+                       style="-fx-fill: #6a73ff; -fx-arc-width: 20; -fx-arc-height: 20;"/>
         </VBox>
     </top>
 
     <!-- CONTENIDO PRINCIPAL -->
     <center>
-        <VBox alignment="CENTER" spacing="25" style="-fx-padding: 20;">
-            
-            <!-- Filtros -->
-            <HBox spacing="15" alignment="CENTER">
-                <ComboBox fx:id="typeSelector"
-                          promptText="Seleccionar categoría"
-                          prefWidth="200"/>
-                
-                <TextField fx:id="searchField"
-                           promptText="Buscar por ID, nombre, marca..."
-                           prefWidth="350"
-                           style="-fx-background-radius: 10; -fx-padding: 8;"/>
+        <VBox alignment="CENTER" spacing="25">
+            <padding><Insets top="20" bottom="20"/></padding>
 
-                <Button text="Buscar"
-                        onAction="#search"
-                        prefWidth="130" prefHeight="40"
-                        style="-fx-font-size: 16px; -fx-background-color: #4a4eff;
-                               -fx-text-fill: white; -fx-background-radius: 12;"/>
-            </HBox>
+            <!-- PANEL DE BÚSQUEDA -->
+            <VBox spacing="20" alignment="CENTER"
+                  style="-fx-background-color: #ffffff;
+                         -fx-background-radius: 25;
+                         -fx-padding: 30;
+                         -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.25), 20, 0, 0, 10);">
 
-            <!-- Tabla de resultados -->
-            <TableView fx:id="resultTable"
-                       prefWidth="900" prefHeight="400"
-                       style="-fx-background-radius: 12;">
-                <columns>
-                    <TableColumn text="ID" prefWidth="80"/>
-                    <TableColumn text="Nombre" prefWidth="200"/>
-                    <TableColumn text="Detalle" prefWidth="300"/>
-                    <TableColumn text="Extra" prefWidth="250"/>
-                </columns>
-            </TableView>
+                <Label text="Filtros de Búsqueda"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2d2f66;"/>
+
+                <HBox spacing="20" alignment="CENTER">
+                    <ComboBox fx:id="typeSelector"
+                              promptText="Seleccionar categoría"
+                              prefWidth="250"
+                              style="-fx-font-size: 14px;"/>
+
+                    <TextField fx:id="searchField"
+                               promptText="Buscar por ID, nombre, marca, documento..."
+                               prefWidth="400"
+                               style="-fx-font-size: 14px; -fx-padding: 10;"/>
+
+                    <Button text="🔍 Buscar"
+                            onAction="#search"
+                            prefWidth="140" prefHeight="40"
+                            style="-fx-background-color: linear-gradient(to right,#6a73ff,#9a63ff);
+                                   -fx-background-radius: 20; -fx-text-fill: white; -fx-font-size: 15px;"/>
+                </HBox>
+
+                <HBox spacing="15" alignment="CENTER">
+                    <Button text="Limpiar"
+                            onAction="#clearSearch"
+                            prefWidth="120" prefHeight="35"
+                            style="-fx-background-color: #e2e2e2; -fx-background-radius: 15;
+                                   -fx-text-fill:#333; -fx-font-size: 14px;"/>
+
+                    <Button text="Volver al Menú"
+                            onAction="#goToMainMenu"
+                            prefWidth="150" prefHeight="35"
+                            style="-fx-background-color: linear-gradient(to right,#ff6565,#ff8585);
+                                   -fx-background-radius: 15; -fx-text-fill: white; -fx-font-size: 14px;"/>
+                </HBox>
+            </VBox>
+
+            <!-- TABLA DE RESULTADOS -->
+            <VBox spacing="15" alignment="CENTER"
+                  style="-fx-background-color: #ffffff;
+                         -fx-background-radius: 25;
+                         -fx-padding: 25;
+                         -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.25), 20, 0, 0, 10);">
+
+                <Label text="Resultados de Búsqueda"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2d2f66;"/>
+
+                <Label fx:id="resultCountLabel"
+                       text="0 registros encontrados"
+                       style="-fx-font-size: 13px; -fx-text-fill: #666;"/>
+
+                <TableView fx:id="resultTable"
+                           prefWidth="1100" prefHeight="350"
+                           style="-fx-background-radius: 10;">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="100"/>
+                        <TableColumn fx:id="colName" text="Nombre/Serial" prefWidth="200"/>
+                        <TableColumn fx:id="colDetail" text="Detalle" prefWidth="300"/>
+                        <TableColumn fx:id="colExtra" text="Información Adicional" prefWidth="250"/>
+                        <TableColumn fx:id="colType" text="Tipo" prefWidth="150"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
         </VBox>
     </center>
 

@@ -1,141 +1,175 @@
 package edu.usta.ui;
 
+import java.io.IOException;
+
 import edu.usta.domain.entities.Provider;
 import edu.usta.domain.entities.TechEquipment;
 import edu.usta.domain.enums.EquipmentStatus;
 import edu.usta.domain.enums.EquipmentType;
-import edu.usta.domain.repositories.JDBCTechEquipmentRepository;
 import edu.usta.domain.repositories.JDBCProviderRepository;
+import edu.usta.domain.repositories.JDBCTechEquipmentRepository;
 import edu.usta.infrastructure.db.DatabaseConnection;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
-import javafx.event.ActionEvent;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-
-public class TechEquipmentController implements Initializable {
+public class TechEquipmentController {
 
     @FXML
     private TextField serialField;
+
     @FXML
     private TextField brandField;
+
     @FXML
     private TextField modelField;
+
     @FXML
     private ComboBox<EquipmentType> typeBox;
+
     @FXML
     private ComboBox<EquipmentStatus> stateBox;
+
     @FXML
     private ComboBox<Provider> providerBox;
+
     @FXML
     private TextField osField;
+
     @FXML
     private TextField ramField;
+
     @FXML
     private TextField imageField;
 
-    private JDBCTechEquipmentRepository techRepo;
-    private JDBCProviderRepository providerRepo;
+    private JDBCTechEquipmentRepository repository;
+    private JDBCProviderRepository providerRepository;
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        DatabaseConnection db = DatabaseConnection.getInstance();
+    public TechEquipmentController() {
+        // Constructor vacío requerido por JavaFX
+    }
 
-        techRepo = new JDBCTechEquipmentRepository(db);
-        providerRepo = new JDBCProviderRepository(db);
+    public void initialize() {
+        // Inicializar repositorios
+        repository = new JDBCTechEquipmentRepository(DatabaseConnection.getInstance());
+        providerRepository = new JDBCProviderRepository(DatabaseConnection.getInstance());
 
+        // Cargar enums en ComboBox
         typeBox.getItems().addAll(EquipmentType.values());
         stateBox.getItems().addAll(EquipmentStatus.values());
 
-        List<Provider> providers = providerRepo.findAll();
-        providerBox.getItems().addAll(providers);
-
-        // AGREGAR ESTO: Configurar cómo se muestra el Provider en el ComboBox
-        providerBox.setConverter(new javafx.util.StringConverter<Provider>() {
-            @Override
-            public String toString(Provider provider) {
-                return provider != null ? provider.getName() : "";
-            }
-
-            @Override
-            public Provider fromString(String string) {
-                return providerBox.getItems().stream()
-                        .filter(p -> p.getName().equals(string))
-                        .findFirst()
-                        .orElse(null);
-            }
-        });
+        // Cargar proveedores
+        loadProviders();
     }
 
-    @FXML
-    public void cancel(ActionEvent event) {
-        clearFields();
-    }
-
-    private void clearFields() {
-        serialField.clear();
-        brandField.clear();
-        modelField.clear();
-        osField.clear();
-        ramField.clear();
-        imageField.clear();
-
-        typeBox.setValue(null);
-        stateBox.setValue(null);
-        providerBox.setValue(null);
-    }
-
-    @FXML
-    public void saveTech(ActionEvent event) {
+    private void loadProviders() {
         try {
+            providerBox.getItems().clear();
+            providerBox.getItems().addAll(providerRepository.findAll());
 
-            if (serialField.getText().isEmpty() ||
-                    brandField.getText().isEmpty() ||
-                    modelField.getText().isEmpty() ||
-                    typeBox.getValue() == null ||
-                    stateBox.getValue() == null ||
-                    providerBox.getValue() == null ||
-                    osField.getText().isEmpty() ||
-                    ramField.getText().isEmpty()) {
+            // Configurar visualización del proveedor en el ComboBox
+            providerBox.setButtonCell(new javafx.scene.control.ListCell<Provider>() {
+                @Override
+                protected void updateItem(Provider item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item.getName());
+                    }
+                }
+            });
 
-                showAlert(Alert.AlertType.ERROR, "Campos incompletos",
-                        "Por favor complete todos los campos obligatorios.");
-                return;
-            }
-
-            TechEquipment tech = new TechEquipment(
-                    serialField.getText(),
-                    brandField.getText(),
-                    modelField.getText(),
-                    typeBox.getValue(),
-                    stateBox.getValue(),
-                    providerBox.getValue(),
-                    imageField.getText(),
-                    osField.getText(),
-                    Integer.parseInt(ramField.getText()));
-
-            techRepo.create(tech);
-
-            showAlert(Alert.AlertType.INFORMATION, "Registro completado", "Equipo guardado correctamente.");
-            clearFields();
+            providerBox.setCellFactory(lv -> new javafx.scene.control.ListCell<Provider>() {
+                @Override
+                protected void updateItem(Provider item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item.getName());
+                    }
+                }
+            });
 
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Error al guardar", e.getMessage());
+            showError("Error al cargar proveedores", e.getMessage());
         }
     }
 
+    // ------------------------
+    // GUARDAR
+    // ------------------------
+    @FXML
+    private void saveTech() {
+        try {
+            // Validaciones
+            if (!validateFields()) {
+                return;
+            }
+
+            // Validar RAM (debe ser número)
+            int ram;
+            try {
+                ram = Integer.parseInt(ramField.getText().trim());
+                if (ram <= 0) {
+                    showWarning("Valor inválido", "La memoria RAM debe ser un número mayor a 0");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                showWarning("Formato inválido", "La memoria RAM debe ser un número entero");
+                return;
+            }
+
+            TechEquipment equipment = new TechEquipment(
+                    serialField.getText().trim(),
+                    brandField.getText().trim(),
+                    modelField.getText().trim(),
+                    typeBox.getValue(),
+                    stateBox.getValue(),
+                    providerBox.getValue(),
+                    imageField.getText().trim(),
+                    osField.getText().trim(),
+                    ram);
+
+            TechEquipment saved = repository.create(equipment);
+
+            // Alerta de éxito
+            showInfo("✓ Registro Exitoso",
+                    "El equipo tecnológico se ha registrado correctamente.\n\n" +
+                            "ID generado: " + saved.getId());
+
+            clearFields();
+
+        } catch (Exception e) {
+            // Alerta de error
+            showError("✗ Error al Guardar",
+                    "No se pudo registrar el equipo tecnológico.\n\n" +
+                            "Detalle: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // ------------------------
+    // CANCELAR
+    // ------------------------
+    @FXML
+    private void cancel() {
+        clearFields();
+        showInfo("Cancelado", "Los campos han sido limpiados");
+    }
+
+    // ------------------------
+    // VOLVER AL MENÚ PRINCIPAL
+    // ------------------------
     @FXML
     private void goToMainMenu(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/views/MainView.fxml"));
@@ -148,16 +182,78 @@ public class TechEquipmentController implements Initializable {
         window.show();
     }
 
-    private void showAlert(Alert.AlertType type, String title, String msg) {
-        Alert alert = new Alert(type);
-        alert.setHeaderText(title);
-        alert.setContentText(msg);
+    // ------------------------
+    // MÉTODOS AUXILIARES
+    // ------------------------
+    private boolean validateFields() {
+        if (serialField.getText().trim().isEmpty()) {
+            showWarning("Campo requerido", "El campo Serial es obligatorio");
+            return false;
+        }
+        if (brandField.getText().trim().isEmpty()) {
+            showWarning("Campo requerido", "El campo Marca es obligatorio");
+            return false;
+        }
+        if (modelField.getText().trim().isEmpty()) {
+            showWarning("Campo requerido", "El campo Modelo es obligatorio");
+            return false;
+        }
+        if (typeBox.getValue() == null) {
+            showWarning("Campo requerido", "Debe seleccionar un Tipo");
+            return false;
+        }
+        if (stateBox.getValue() == null) {
+            showWarning("Campo requerido", "Debe seleccionar un Estado");
+            return false;
+        }
+        if (providerBox.getValue() == null) {
+            showWarning("Campo requerido", "Debe seleccionar un Proveedor");
+            return false;
+        }
+        if (osField.getText().trim().isEmpty()) {
+            showWarning("Campo requerido", "El campo Sistema Operativo es obligatorio");
+            return false;
+        }
+        if (ramField.getText().trim().isEmpty()) {
+            showWarning("Campo requerido", "El campo Memoria RAM es obligatorio");
+            return false;
+        }
+        return true;
+    }
 
-        // Estilo moderno
-        DialogPane pane = alert.getDialogPane();
-        pane.setStyle("-fx-background-color: #ffffff; -fx-font-size: 15px;");
-        pane.getStylesheets().add(
-                getClass().getResource("/css/alert.css").toExternalForm());
+    private void clearFields() {
+        serialField.clear();
+        brandField.clear();
+        modelField.clear();
+        typeBox.getSelectionModel().clearSelection();
+        stateBox.getSelectionModel().clearSelection();
+        providerBox.getSelectionModel().clearSelection();
+        osField.clear();
+        ramField.clear();
+        imageField.clear();
+    }
+
+    private void showInfo(String title, String message) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showWarning(String title, String message) {
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showError(String title, String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
         alert.showAndWait();
     }
 }

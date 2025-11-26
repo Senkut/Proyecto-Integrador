@@ -3,6 +3,8 @@ package edu.usta.infrastructure.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+// Archivo de prueba para verificar la conexión a la base de datos
+
 public class TestDB {
     public static void main(String[] args) {
         try {
@@ -10,11 +12,11 @@ public class TestDB {
             Connection conn = db.getConnection();
 
             if (conn != null) {
-                System.out.println("✔ Conexión exitosa a la base de datos.");
+                System.out.println(" Conexión exitosa a la base de datos.");
                 conn.close();
             }
         } catch (SQLException e) {
-            System.out.println("❌ Error de conexión:");
+            System.out.println(" Error de conexión:");
             e.printStackTrace();
         }
     }
