@@ -5,61 +5,56 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.shape.Rectangle?>
 
 <BorderPane prefWidth="1280" prefHeight="720"
-            style="-fx-background-color: linear-gradient(to bottom, #f0f4ff, #ffffff);"
+            style="-fx-background-color: linear-gradient(to bottom, #e8ecff, #f9faff);"
             xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="edu.usta.ui.MainMenuController">
 
     <!-- HEADER -->
     <top>
-        <VBox spacing="10" alignment="CENTER">
+        <VBox alignment="CENTER" spacing="12">
             <padding>
-                <Insets top="30" bottom="20"/>
+                <Insets top="40" bottom="10"/>
             </padding>
 
             <Label text="Sistema de Registros"
-                   style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                   style="-fx-font-size: 40px; -fx-font-weight: bold;
+                          -fx-text-fill: #3b4a73; -fx-font-family: 'Segoe UI';"/>
 
-            <!-- Línea decorativa -->
-            <Rectangle width="300" height="3"
-                       style="-fx-fill: #5a7dff; -fx-arc-height: 10; -fx-arc-width: 10;"/>
+            <Rectangle width="280" height="4"
+                       arcHeight="10" arcWidth="10"
+                       style="-fx-fill: linear-gradient(to right, #6a7bff, #8e54ff);"/>
         </VBox>
     </top>
 
     <!-- CENTRO -->
     <center>
-        <VBox alignment="CENTER" spacing="25">
-            <padding>
-                <Insets top="40" bottom="40"/>
-            </padding>
+        <VBox alignment="CENTER" spacing="28">
+            <padding><Insets top="50" bottom="40"/></padding>
 
+            <!-- BOTÓN ESTILO GLOBAL -->
             <Button text="Registrar Equipo Tecnológico"
                     onAction="#goTech"
-                    prefWidth="350" prefHeight="55"
-                    style="-fx-font-size: 18px; -fx-background-color: #5a7dff; -fx-text-fill: white;
-                           -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, #777, 8, 0, 0, 4);"/>
+                    styleClass="menu-btn"/>
 
             <Button text="Registrar Equipo Biomédico"
                     onAction="#goBio"
-                    prefWidth="350" prefHeight="55"
-                    style="-fx-font-size: 18px; -fx-background-color: #6c63ff; -fx-text-fill: white;
-                           -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, #777, 8, 0, 0, 4);"/>
+                    styleClass="menu-btn"/>
 
             <Button text="Registrar Persona"
                     onAction="#goPerson"
-                    prefWidth="350" prefHeight="55"
-                    style="-fx-font-size: 18px; -fx-background-color: #7b5cff; -fx-text-fill: white;
-                           -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, #777, 8, 0, 0, 4);"/>
+                    styleClass="menu-btn"/>
 
             <Button text="Registrar Proveedor"
                     onAction="#goProvider"
-                    prefWidth="350" prefHeight="55"
-                    style="-fx-font-size: 18px; -fx-background-color: #8e54ff; -fx-text-fill: white;
-                           -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, #777, 8, 0, 0, 4);"/>
+                    styleClass="menu-btn"/>
+
+            <Button text="Buscar Registros"
+                    onAction="#goSearch"
+                    styleClass="menu-btn"/>
         </VBox>
     </center>
 

@@ -2,94 +2,56 @@
 
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.layout.HBox?>
 
-<BorderPane prefWidth="1280" prefHeight="720"
+<BorderPane prefWidth="900" prefHeight="650"
             xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="edu.usta.ui.PersonController"
-            style="-fx-background-color: linear-gradient(to bottom, #f0f4ff, #ffffff);">
+            style="-fx-background-color: #f0f4ff;">
 
-    <!-- HEADER -->
+
+    <!-- 🔵 Botón regresar arriba -->
     <top>
-        <VBox alignment="CENTER" spacing="10">
-            <padding>
-                <Insets top="40" bottom="20"/>
-            </padding>
-
-            <Label text="Registro de Persona"
-                   style="-fx-font-size: 34px; -fx-font-weight: bold;
-                          -fx-text-fill: #2c3e50;"/>
-
-            <Rectangle width="260" height="3"
-                       style="-fx-fill: #5a7dff; -fx-arc-width: 10; -fx-arc-height: 10;"/>
-        </VBox>
+        <HBox style="-fx-padding: 20;">
+            <Button text="⮜ Regresar"
+                    onAction="#goBack"
+                    style="-fx-background-color: #dddddd;
+                           -fx-background-radius: 10;
+                           -fx-font-size: 14px;
+                           -fx-text-fill: black;"/>
+        </HBox>
     </top>
 
-    <!-- FORMULARIO CON TARJETA -->
+
     <center>
-        <VBox alignment="CENTER">
-            <GridPane hgap="25" vgap="22" alignment="CENTER"
-                      style="-fx-background-color: #ffffff; -fx-background-radius: 20;
-                             -fx-effect: dropshadow(three-pass-box, #b5b5b5, 15, 0, 0, 6);">
-                
-                <padding>
-                    <Insets top="40" bottom="40" left="60" right="60"/>
-                </padding>
+        <GridPane hgap="20" vgap="25" alignment="CENTER"
+                  style="-fx-background-color: white; -fx-background-radius: 15;
+                         -fx-padding: 40;">
+            
+            <Label text="Nombre completo:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="fullnameField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                       prefWidth="300" promptText="Ingrese el nombre completo"/>
 
-                <!-- CAMPOS  -->
-                <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"
-                       style="-fx-font-size: 18px; -fx-text-fill: #2c3e50;"/>
-                <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                           prefWidth="300" promptText="Ingrese el nombre"
-                           style="-fx-background-radius: 10; -fx-padding: 8;"/>
+            <Label text="Documento:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="documentField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                       prefWidth="300" promptText="Ingrese documento"/>
 
-                <Label text="Apellido:" GridPane.rowIndex="1" GridPane.columnIndex="0"
-                       style="-fx-font-size: 18px; -fx-text-fill: #2c3e50;"/>
-                <TextField fx:id="lastNameField" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                           prefWidth="300" promptText="Ingrese el apellido"
-                           style="-fx-background-radius: 10; -fx-padding: 8;"/>
+            <Label text="Rol:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <ComboBox fx:id="roleField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                      prefWidth="300"/>
 
-                <Label text="Correo:" GridPane.rowIndex="2" GridPane.columnIndex="0"
-                       style="-fx-font-size: 18px; -fx-text-fill: #2c3e50;"/>
-                <TextField fx:id="emailField" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                           prefWidth="300" promptText="ejemplo@correo.com"
-                           style="-fx-background-radius: 10; -fx-padding: 8;"/>
+            <Button text="Guardar" onAction="#savePerson"
+                    GridPane.rowIndex="3" GridPane.columnIndex="0"
+                    style="-fx-background-color: #5a7dff; -fx-text-fill: white;"/>
 
-                <Label text="Teléfono:" GridPane.rowIndex="3" GridPane.columnIndex="0"
-                       style="-fx-font-size: 18px; -fx-text-fill: #2c3e50;"/>
-                <TextField fx:id="phoneField" GridPane.rowIndex="3" GridPane.columnIndex="1"
-                           prefWidth="300" promptText="Ingrese el teléfono"
-                           style="-fx-background-radius: 10; -fx-padding: 8;"/>
-
-                <!-- BOTONES -->
-                <HBox spacing="20" alignment="CENTER"
-                      GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                    <padding>
-                        <Insets top="30"/>
-                    </padding>
-
-                    <Button text="Guardar" onAction="#savePerson"
-                            prefWidth="150" prefHeight="45"
-                            style="-fx-font-size: 16px; -fx-background-color: #5a7dff;
-                                   -fx-text-fill: white; -fx-background-radius: 12;
-                                   -fx-effect: dropshadow(three-pass-box, #777, 10, 0, 0, 4);"/>
-
-                    <Button text="Cancelar" onAction="#cancel"
-                            prefWidth="150" prefHeight="45"
-                            style="-fx-font-size: 16px; -fx-background-color: #ff5a5a;
-                                   -fx-text-fill: white; -fx-background-radius: 12;
-                                   -fx-effect: dropshadow(three-pass-box, #777, 10, 0, 0, 4);"/>
-                </HBox>
-
-            </GridPane>
-        </VBox>
+            <Button text="Cancelar" onAction="#cancel"
+                    GridPane.rowIndex="3" GridPane.columnIndex="1"
+                    style="-fx-background-color: #ff5a5a; -fx-text-fill: white;"/>
+        </GridPane>
     </center>
 
 </BorderPane>

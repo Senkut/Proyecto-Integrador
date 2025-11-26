@@ -65,30 +65,81 @@ public class JDBCBiomedicalEquipmentRepository implements GenericRepository<Biom
     @Override
     public BiomedicalEquipment create(BiomedicalEquipment entity) {
         if (entity.getId() == null) {
-            final String sql = "INSERT INTO biomedical_equipment (risk_class, calibration_cert) VALUES (?, ?) RETURNING id";
+            // Primero insertar en equipment y obtener el ID
+            final String equipmentSql = """
+                    INSERT INTO equipment (serial, brand, model, type, state, provider_id, image_path)
+                    VALUES (?, ?, ?, ?::equipment_type, ?::equipment_status, ?::UUID, ?)
+                    RETURNING id
+                    """;
 
-            try (Connection connection = db.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.setString(1, entity.getRiskClass());
-                preparedStatement.setString(2, entity.getCalibrationCert());
+            // Luego insertar en biomedical_equipment con el ID obtenido
+            final String biomedicalSql = """
+                    INSERT INTO biomedical_equipment (id, risk_class, calibration_cert)
+                    VALUES (?::UUID, ?, ?)
+                    """;
 
-                preparedStatement.setString(3, entity.getSerial());
-                preparedStatement.setString(4, entity.getBrand());
-                preparedStatement.setString(5, entity.getModel());
-                preparedStatement.setObject(6, entity.getType());
-                preparedStatement.setObject(7, entity.getState());
-                preparedStatement.setObject(8, entity.getProvider());
-                preparedStatement.setString(9, entity.getImagePath());
+            try (Connection connection = db.getConnection()) {
+                connection.setAutoCommit(false); // Iniciar transacción
 
-                try (ResultSet result = preparedStatement.executeQuery()) {
-                    if (result.next()) {
-                        String id = result.getObject("id", String.class);
-                        return new BiomedicalEquipment(id, entity.getSerial(), entity.getBrand(), entity.getModel(),
-                                entity.getType(), entity.getState(), entity.getProvider(), entity.getImagePath(),
-                                entity.getRiskClass(), entity.getCalibrationCert());
+                try {
+                    // Insertar en equipment
+                    UUID equipmentId;
+                    try (PreparedStatement equipmentStmt = connection.prepareStatement(equipmentSql)) {
+                        equipmentStmt.setString(1, entity.getSerial());
+                        equipmentStmt.setString(2, entity.getBrand());
+                        equipmentStmt.setString(3, entity.getModel());
+                        equipmentStmt.setString(4, entity.getType().name());
+                        equipmentStmt.setString(5, entity.getState().name());
+
+                        // Extraer el ID del Provider
+                        if (entity.getProvider() != null) {
+                            equipmentStmt.setObject(6, UUID.fromString(entity.getProvider().getId()));
+                        } else {
+                            equipmentStmt.setNull(6, java.sql.Types.OTHER);
+                        }
+
+                        equipmentStmt.setString(7, entity.getImagePath());
+
+                        try (ResultSet result = equipmentStmt.executeQuery()) {
+                            if (result.next()) {
+                                // CAMBIO: obtener directamente como UUID
+                                equipmentId = result.getObject("id", UUID.class);
+                            } else {
+                                throw new SQLException("No ID returned from equipment insert");
+                            }
+                        }
                     }
-                    throw new SQLException("No ID returned");
+
+                    // Insertar en biomedical_equipment
+                    try (PreparedStatement biomedicalStmt = connection.prepareStatement(biomedicalSql)) {
+                        biomedicalStmt.setObject(1, equipmentId); // Ya es UUID, no necesita conversión
+                        biomedicalStmt.setString(2, entity.getRiskClass());
+                        biomedicalStmt.setString(3, entity.getCalibrationCert());
+
+                        biomedicalStmt.executeUpdate();
+                    }
+
+                    connection.commit(); // Confirmar transacción
+
+                    return new BiomedicalEquipment(
+                            equipmentId.toString(), // Convertir a String solo para el constructor
+                            entity.getSerial(),
+                            entity.getBrand(),
+                            entity.getModel(),
+                            entity.getType(),
+                            entity.getState(),
+                            entity.getProvider(),
+                            entity.getImagePath(),
+                            entity.getRiskClass(),
+                            entity.getCalibrationCert());
+
+                } catch (SQLException e) {
+                    connection.rollback(); // Revertir en caso de error
+                    throw e;
+                } finally {
+                    connection.setAutoCommit(true);
                 }
+
             } catch (SQLException exception) {
                 throw new RuntimeException("Error inserting biomedical equipment", exception);
             }

@@ -1,109 +1,83 @@
 package edu.usta.ui;
 
+import edu.usta.domain.entities.Person;
+import edu.usta.domain.enums.Role;
+import edu.usta.domain.repositories.JDBCPersonRepository;
+import edu.usta.infrastructure.db.DatabaseConnection;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.util.regex.Pattern;
 
 public class PersonController {
 
     @FXML
-    private TextField nameField;
+    private TextField fullnameField;
+    @FXML
+    private TextField documentField;
+    @FXML
+    private ComboBox<Role> roleField;
+
+    private final JDBCPersonRepository repository = new JDBCPersonRepository(DatabaseConnection.getInstance());
 
     @FXML
-    private TextField lastNameField;
-
-    @FXML
-    private TextField emailField;
-
-    @FXML
-    private TextField phoneField;
-
-    // Patrón para validar email
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    public void initialize() {
+        roleField.getItems().addAll(Role.values());
+    }
 
     @FXML
     private void savePerson(ActionEvent event) {
 
-        // Validar vacíos
-        if (nameField.getText().isEmpty() ||
-                lastNameField.getText().isEmpty() ||
-                emailField.getText().isEmpty() ||
-                phoneField.getText().isEmpty()) {
+        if (fullnameField.getText().isEmpty() ||
+                documentField.getText().isEmpty() ||
+                roleField.getValue() == null) {
 
-            showAlert(Alert.AlertType.WARNING, "Campos Vacíos",
-                    "Por favor complete todos los campos.");
+            showAlert(Alert.AlertType.WARNING, "Campos incompletos",
+                    "Debe llenar todos los campos.");
             return;
         }
 
-        // Validar email
-        String email = emailField.getText();
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-            showAlert(Alert.AlertType.WARNING, "Correo Inválido",
-                    "Por favor ingrese un correo electrónico válido.");
-            return;
-        }
+        Person person = new Person(
+                fullnameField.getText(),
+                documentField.getText(),
+                roleField.getValue());
 
-        // Validar teléfono solo números
-        String phone = phoneField.getText();
-        if (!phone.matches("\\d+")) {
-            showAlert(Alert.AlertType.WARNING, "Teléfono Inválido",
-                    "El teléfono debe contener solo números.");
-            return;
-        }
-
-        // Datos de salida (puedes reemplazar por persistencia real)
-        String nombre = nameField.getText();
-        String apellido = lastNameField.getText();
-
-        System.out.println("Persona Registrada:");
-        System.out.println("Nombre: " + nombre);
-        System.out.println("Apellido: " + apellido);
-        System.out.println("Correo: " + email);
-        System.out.println("Teléfono: " + phone);
+        repository.create(person);
 
         showAlert(Alert.AlertType.INFORMATION, "Éxito",
-                "Persona registrada correctamente.");
+                "La persona ha sido registrada correctamente.");
 
         clearFields();
     }
 
     @FXML
     private void cancel(ActionEvent event) {
-        returnToMainMenu(event);
+        clearFields();
+    }
+
+    @FXML
+    private void goBack(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/MainView.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("❌ ERROR: No se pudo cargar la vista MainView.fxml");
+        }
     }
 
     private void clearFields() {
-        nameField.clear();
-        lastNameField.clear();
-        emailField.clear();
-        phoneField.clear();
-    }
-
-    private void returnToMainMenu(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("MainView.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Sistema de Registros");
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error",
-                    "No se pudo cargar la vista principal.");
-        }
+        fullnameField.clear();
+        documentField.clear();
+        roleField.setValue(null);
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {

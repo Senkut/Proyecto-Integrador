@@ -1,0 +1,31 @@
+.menu-btn {
+    -fx-pref-width: 360px;
+    -fx-pref-height: 58px;
+    -fx-font-size: 18px;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-text-fill: white;
+
+    /* Gradiente suave */
+    -fx-background-color: linear-gradient(to right, #6a7bff, #8e54ff);
+
+    -fx-background-radius: 16px;
+    -fx-cursor: hand;
+
+    /* Neumorfismo ligero */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 12, 0.2, 0, 4);
+
+    /* Transición suave */
+    -fx-padding: 8 20;
+    -fx-transition: all 0.25s ease-in-out;
+}
+
+.menu-btn:hover {
+    -fx-background-color: linear-gradient(to right, #7f89ff, #9b63ff);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.26), 18, 0.3, 0, 6);
+    -fx-translate-y: -3;
+}
+
+.menu-btn:pressed {
+    -fx-translate-y: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 5, 0.2, 0, 2);
+}

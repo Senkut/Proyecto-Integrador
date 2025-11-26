@@ -39,7 +39,7 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
     @Override
     public Person create(Person entity) {
         if (entity.getId() == null) {
-            final String sql = "INSERT INTO person (full_name, document, role) VALUES (?, ?, ?) RETURNING id";
+            final String sql = "INSERT INTO person (full_name, document, role) VALUES (?, ?, ?::role_enum) RETURNING id";
 
             try (Connection connection = db.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -49,8 +49,8 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
 
                 try (ResultSet result = preparedStatement.executeQuery()) {
                     if (result.next()) {
-                        String id = result.getObject("id", String.class);
-                        return new Person(id, entity.getFullname(), entity.getDocument(), entity.getRole());
+                        UUID id = result.getObject("id", UUID.class);
+                        return new Person(id.toString(), entity.getFullname(), entity.getDocument(), entity.getRole());
                     }
                     throw new SQLException("No ID returned");
                 }
@@ -131,7 +131,9 @@ public class JDBCPersonRepository implements GenericRepository<Person> {
 
     @Override
     public Person update(Person entity) {
-        final String sql = "UPDATE person SET full_name = ?, document = ?, role = ? WHERE id = ?::UUID";
+        // CAMBIO: Agregar ::role_enum
+        final String sql = "UPDATE person SET full_name = ?, document = ?, role = ?::role_enum WHERE id = ?::UUID";
+
         try (Connection connection = db.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, entity.getFullname());

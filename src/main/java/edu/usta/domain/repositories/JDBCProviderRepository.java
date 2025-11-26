@@ -55,8 +55,9 @@ public class JDBCProviderRepository implements GenericRepository<Provider> {
 
                 try (ResultSet result = preparedStatement.executeQuery()) {
                     if (result.next()) {
-                        String id = result.getObject("id", String.class);
-                        return new Provider(id, entity.getName(), entity.getTaxId(),
+                        // CORRECCIÓN: Obtener como UUID y convertir a String
+                        UUID id = result.getObject("id", UUID.class);
+                        return new Provider(id.toString(), entity.getName(), entity.getTaxId(),
                                 entity.getContactEmail());
                     }
                     throw new SQLException("No ID returned");

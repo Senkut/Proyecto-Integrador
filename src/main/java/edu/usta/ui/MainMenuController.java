@@ -32,6 +32,11 @@ public class MainMenuController {
         loadView(event, "/views/Provider.fxml", "Registro de Proveedor");
     }
 
+    @FXML
+    private void goSearch(ActionEvent event) {
+        loadView(event, "/views/BuscarRegistros.fxml", "Buscar Registros");
+    }
+
     /**
      * Método auxiliar para cargar una nueva vista
      */

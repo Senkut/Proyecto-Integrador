@@ -52,6 +52,19 @@ public class Provider {
     }
 
     /**
+     * Constructor para crear un proveedor con taxId personalizado.
+     *
+     * @param name         Nombre del proveedor
+     * @param taxId        Número de identificación tributaria
+     * @param contactEmail Correo electrónico de contacto
+     */
+    public Provider(String name, String taxId, String contactEmail) {
+        this.name = name;
+        this.taxId = taxId;
+        this.contactEmail = contactEmail;
+    }
+
+    /**
      * Obtiene el identificador único del proveedor.
      *
      * @return id del proveedor

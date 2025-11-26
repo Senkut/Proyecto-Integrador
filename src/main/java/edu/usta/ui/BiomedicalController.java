@@ -1,108 +1,326 @@
 package edu.usta.ui;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.stage.Stage;
+import java.util.UUID;
 
-import java.io.IOException;
-import java.time.LocalDate;
+import edu.usta.domain.entities.BiomedicalEquipment;
+import edu.usta.domain.entities.Provider;
+import edu.usta.domain.enums.EquipmentStatus;
+import edu.usta.domain.enums.EquipmentType;
+import edu.usta.domain.repositories.JDBCBiomedicalEquipmentRepository;
+import edu.usta.domain.repositories.JDBCProviderRepository;
+import edu.usta.infrastructure.db.DatabaseConnection;
+import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 public class BiomedicalController {
 
     @FXML
-    private TextField nameField;
+    private TextField serialField;
 
     @FXML
-    private TextField manufacturerField;
+    private TextField brandField;
 
     @FXML
-    private DatePicker fabDateField;
+    private TextField modelField;
 
     @FXML
-    private TextArea descriptionField;
+    private ComboBox<EquipmentType> typeField;
 
     @FXML
-    private void saveBio(ActionEvent event) {
+    private ComboBox<EquipmentStatus> stateField;
 
-        // Validar campos vacíos
-        if (nameField.getText().isEmpty() ||
-                manufacturerField.getText().isEmpty() ||
-                fabDateField.getValue() == null ||
-                descriptionField.getText().isEmpty()) {
+    @FXML
+    private ComboBox<Provider> providerField;
 
-            showAlert(Alert.AlertType.WARNING, "Campos Vacíos",
-                    "Por favor complete todos los campos.");
-            return;
+    @FXML
+    private ComboBox<String> riskClassField;
+
+    @FXML
+    private TextField calibrationCertField;
+
+    @FXML
+    private TextField imagePathField;
+
+    private JDBCBiomedicalEquipmentRepository repository;
+    private JDBCProviderRepository providerRepository;
+
+    public BiomedicalController() {
+        // JavaFX exige constructor vacío
+    }
+
+    public void initialize() {
+        // Crear repositories
+        repository = new JDBCBiomedicalEquipmentRepository(DatabaseConnection.getInstance());
+        providerRepository = new JDBCProviderRepository(DatabaseConnection.getInstance());
+
+        // Cargar enums en los ComboBox
+        typeField.getItems().addAll(EquipmentType.values());
+        stateField.getItems().addAll(EquipmentStatus.values());
+
+        // Cargar opciones de clase de riesgo
+        riskClassField.getItems().addAll("Clase I", "Clase IIa", "Clase IIb", "Clase III");
+
+        // Cargar proveedores desde la base de datos
+        loadProviders();
+    }
+
+    private void loadProviders() {
+        try {
+            providerField.getItems().clear();
+            providerField.getItems().addAll(providerRepository.findAll());
+
+            // Configurar cómo se muestra el proveedor en el ComboBox
+            providerField.setButtonCell(new javafx.scene.control.ListCell<Provider>() {
+                @Override
+                protected void updateItem(Provider item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item.getName());
+                    }
+                }
+            });
+
+            providerField.setCellFactory(lv -> new javafx.scene.control.ListCell<Provider>() {
+                @Override
+                protected void updateItem(Provider item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item.getName());
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            showError("Error al cargar proveedores", e.getMessage());
         }
+    }
 
-        // Validar que la fecha no sea futura
-        LocalDate fecha = fabDateField.getValue();
-        if (fecha.isAfter(LocalDate.now())) {
-            showAlert(Alert.AlertType.WARNING, "Fecha Inválida",
-                    "La fecha de fabricación no puede ser futura.");
-            return;
+    // ------------------------
+    // GUARDAR
+    // ------------------------
+    @FXML
+    private void onGuardar() {
+        try {
+            // Validaciones
+            if (!validateFields()) {
+                return;
+            }
+
+            BiomedicalEquipment equipment = new BiomedicalEquipment(
+                    serialField.getText().trim(),
+                    brandField.getText().trim(),
+                    modelField.getText().trim(),
+                    typeField.getValue(),
+                    stateField.getValue(),
+                    providerField.getValue(),
+                    imagePathField.getText().trim(),
+                    riskClassField.getValue(),
+                    calibrationCertField.getText().trim());
+
+            BiomedicalEquipment saved = repository.create(equipment);
+            showInfo("Éxito", "Equipo biomédico insertado con ID: " + saved.getId());
+            clearFields();
+
+        } catch (Exception e) {
+            showError("Error al guardar", e.getMessage());
+            e.printStackTrace();
         }
+    }
 
-        // Datos
-        String nombre = nameField.getText();
-        String fabricante = manufacturerField.getText();
-        String description = descriptionField.getText();
+    // ------------------------
+    // BUSCAR POR ID
+    // ------------------------
+    @FXML
+    private void onBuscar() {
+        try {
+            String idText = serialField.getText().trim();
+            if (idText.isEmpty()) {
+                showWarning("Campo vacío", "Ingrese un ID en el campo Serial para buscar");
+                return;
+            }
 
-        System.out.println("Equipo Biomédico Guardado:");
-        System.out.println("Nombre: " + nombre);
-        System.out.println("Fabricante: " + fabricante);
-        System.out.println("Fecha Fabricación: " + fecha);
-        System.out.println("Descripción: " + description);
+            UUID id = UUID.fromString(idText);
+            var found = repository.findById(id);
 
-        // Reemplázalo por tu repositorio/database
-        // biomedicalRepository.save(...)
+            if (found.isPresent()) {
+                BiomedicalEquipment e = found.get();
 
-        showAlert(Alert.AlertType.INFORMATION, "Éxito",
-                "Equipo biomédico registrado correctamente.");
+                serialField.setText(e.getSerial());
+                brandField.setText(e.getBrand());
+                modelField.setText(e.getModel());
 
+                typeField.setValue(e.getType());
+                stateField.setValue(e.getState());
+                providerField.setValue(e.getProvider());
+
+                riskClassField.setValue(e.getRiskClass());
+                calibrationCertField.setText(e.getCalibrationCert());
+                imagePathField.setText(e.getImagePath());
+
+                showInfo("Encontrado", "Equipo cargado correctamente");
+            } else {
+                showWarning("No encontrado", "No existe un equipo con ese ID");
+            }
+
+        } catch (IllegalArgumentException e) {
+            showError("ID inválido", "El formato del ID no es válido");
+        } catch (Exception e) {
+            showError("Error al buscar", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // ------------------------
+    // ACTUALIZAR
+    // ------------------------
+    @FXML
+    private void onActualizar() {
+        try {
+            String idText = serialField.getText().trim();
+            if (idText.isEmpty()) {
+                showWarning("Campo vacío", "Ingrese un ID en el campo Serial para actualizar");
+                return;
+            }
+
+            if (!validateFields()) {
+                return;
+            }
+
+            UUID id = UUID.fromString(idText);
+
+            BiomedicalEquipment updated = new BiomedicalEquipment(
+                    id.toString(),
+                    serialField.getText().trim(),
+                    brandField.getText().trim(),
+                    modelField.getText().trim(),
+                    typeField.getValue(),
+                    stateField.getValue(),
+                    providerField.getValue(),
+                    imagePathField.getText().trim(),
+                    riskClassField.getValue(),
+                    calibrationCertField.getText().trim());
+
+            repository.update(updated);
+            showInfo("Éxito", "Equipo actualizado correctamente");
+
+        } catch (IllegalArgumentException e) {
+            showError("ID inválido", "El formato del ID no es válido");
+        } catch (Exception e) {
+            showError("Error al actualizar", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // ------------------------
+    // ELIMINAR
+    // ------------------------
+    @FXML
+    private void onEliminar() {
+        try {
+            String idText = serialField.getText().trim();
+            if (idText.isEmpty()) {
+                showWarning("Campo vacío", "Ingrese un ID en el campo Serial para eliminar");
+                return;
+            }
+
+            UUID id = UUID.fromString(idText);
+            boolean deleted = repository.delete(id);
+
+            if (deleted) {
+                showInfo("Éxito", "Equipo eliminado correctamente");
+                clearFields();
+            } else {
+                showWarning("No encontrado", "No se encontró el equipo para eliminar");
+            }
+
+        } catch (IllegalArgumentException e) {
+            showError("ID inválido", "El formato del ID no es válido");
+        } catch (Exception e) {
+            showError("Error al eliminar", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // ------------------------
+    // CANCELAR
+    // ------------------------
+    @FXML
+    private void onCancelar() {
         clearFields();
     }
 
-    @FXML
-    private void cancel(ActionEvent event) {
-        returnToMainMenu(event);
+    // ------------------------
+    // MÉTODOS AUXILIARES
+    // ------------------------
+    private boolean validateFields() {
+        if (serialField.getText().trim().isEmpty()) {
+            showWarning("Campo requerido", "El campo Serial es obligatorio");
+            return false;
+        }
+        if (brandField.getText().trim().isEmpty()) {
+            showWarning("Campo requerido", "El campo Marca es obligatorio");
+            return false;
+        }
+        if (modelField.getText().trim().isEmpty()) {
+            showWarning("Campo requerido", "El campo Modelo es obligatorio");
+            return false;
+        }
+        if (typeField.getValue() == null) {
+            showWarning("Campo requerido", "Debe seleccionar un Tipo");
+            return false;
+        }
+        if (stateField.getValue() == null) {
+            showWarning("Campo requerido", "Debe seleccionar un Estado");
+            return false;
+        }
+        if (providerField.getValue() == null) {
+            showWarning("Campo requerido", "Debe seleccionar un Proveedor");
+            return false;
+        }
+        if (riskClassField.getValue() == null) {
+            showWarning("Campo requerido", "Debe seleccionar una Clase de Riesgo");
+            return false;
+        }
+        return true;
     }
 
     private void clearFields() {
-        nameField.clear();
-        manufacturerField.clear();
-        fabDateField.setValue(null);
-        descriptionField.clear();
+        serialField.clear();
+        brandField.clear();
+        modelField.clear();
+        typeField.getSelectionModel().clearSelection();
+        stateField.getSelectionModel().clearSelection();
+        providerField.getSelectionModel().clearSelection();
+        riskClassField.getSelectionModel().clearSelection();
+        calibrationCertField.clear();
+        imagePathField.clear();
     }
 
-    private void returnToMainMenu(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("MainView.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Sistema de Registros");
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error",
-                    "No se pudo cargar la vista principal.");
-        }
+    private void showInfo(String title, String message) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
+    private void showWarning(String title, String message) {
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showError(String title, String message) {
+        Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);

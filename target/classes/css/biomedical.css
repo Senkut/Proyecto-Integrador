@@ -1,0 +1,75 @@
+/* ===== COLORES TEMÁTICOS BIOMÉDICOS ===== */
+* {
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.root {
+    -fx-background-color: #e8eff6;
+}
+
+/* ===== TÍTULO SUPERIOR ===== */
+.title-label {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #003b5c;
+    /* azul institucional */
+}
+
+/* ===== FORMULARIO ===== */
+.form-container {
+    -fx-background-color: white;
+    -fx-padding: 35;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-border-color: #c4d6e5;
+    -fx-border-width: 1.5px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.07), 12, 0, 0, 2);
+}
+
+/* Labels */
+.form-label {
+    -fx-font-size: 15px;
+    -fx-text-fill: #00334e;
+    -fx-font-weight: 600;
+}
+
+/* Inputs */
+.text-field,
+.combo-box {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #9db6c5;
+    -fx-border-width: 1;
+}
+
+.text-field:focused,
+.combo-box:focused {
+    -fx-border-color: #0077b6;
+    -fx-effect: dropshadow(gaussian, rgba(0, 119, 182, 0.2), 10, 0, 0, 0);
+}
+
+/* ===== BOTONES ===== */
+.primary-button {
+    -fx-background-color: #0077b6;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #005c8a;
+}
+
+.cancel-button {
+    -fx-background-color: #e63946;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-font-weight: bold;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #b72a35;
+}

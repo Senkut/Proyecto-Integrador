@@ -3,75 +3,87 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 
-<BorderPane prefWidth="560" prefHeight="520"
-            style="-fx-background-color: #f5f5f5;"
+<BorderPane prefWidth="1280" prefHeight="720"
+            stylesheets="@../css/biomedical.css"
             xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="edu.usta.ui.BiomedicalController">
 
-    <!-- Título -->
     <top>
         <Label text="Registro de Equipo Biomédico"
-               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #333;">
+               styleClass="title-label">
             <BorderPane.margin>
                 <Insets top="25" bottom="15" left="20" right="20"/>
             </BorderPane.margin>
         </Label>
     </top>
 
-    <!-- Contenido principal -->
     <center>
         <GridPane hgap="12" vgap="18" alignment="CENTER"
-                  style="-fx-background-color: white; -fx-padding: 30; -fx-border-radius: 10; -fx-background-radius: 10;">
-            <padding>
-                <Insets top="20" bottom="20" left="40" right="40"/>
-            </padding>
+                  styleClass="form-container">
 
-            <!-- Nombre -->
-            <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"
-                   style="-fx-font-size: 14px; -fx-text-fill: #444;"/>
-            <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                       prefWidth="280" promptText="Ingrese el nombre"/>
+            <padding><Insets top="20" bottom="20" left="40" right="40"/></padding>
 
-            <!-- Fabricante -->
-            <Label text="Fabricante:" GridPane.rowIndex="1" GridPane.columnIndex="0"
-                   style="-fx-font-size: 14px; -fx-text-fill: #444;"/>
-            <TextField fx:id="manufacturerField" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                       prefWidth="280" promptText="Ingrese el fabricante"/>
+            <Label text="Serial:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
+            <TextField fx:id="serialField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                       promptText="Ingrese serial" prefWidth="300" styleClass="text-field"/>
 
-            <!-- Fecha -->
-            <Label text="Fecha de Fabricación:" GridPane.rowIndex="2" GridPane.columnIndex="0"
-                   style="-fx-font-size: 14px; -fx-text-fill: #444;"/>
-            <DatePicker fx:id="fabDateField" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                        prefWidth="280" promptText="Seleccione la fecha"/>
+            <Label text="Marca:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+            <TextField fx:id="brandField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                       promptText="Ingrese marca" prefWidth="300" styleClass="text-field"/>
 
-            <!-- Descripción -->
-            <Label text="Descripción:" GridPane.rowIndex="3" GridPane.columnIndex="0"
-                   style="-fx-font-size: 14px; -fx-text-fill: #444;"/>
-            <TextArea fx:id="descriptionField" GridPane.rowIndex="3" GridPane.columnIndex="1"
-                      prefWidth="280" prefHeight="100"
-                      promptText="Ingrese la descripción"
-                      wrapText="true"
-                      style="-fx-focus-color: #4e73df;"/>
+            <Label text="Modelo:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
+            <TextField fx:id="modelField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                       promptText="Ingrese modelo" prefWidth="300" styleClass="text-field"/>
 
-            <!-- Botones -->
+            <Label text="Tipo:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
+            <ComboBox fx:id="typeField" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                      prefWidth="300" styleClass="combo-box"/>
+
+            <Label text="Estado:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="form-label"/>
+            <ComboBox fx:id="stateField" GridPane.rowIndex="4" GridPane.columnIndex="1"
+                      prefWidth="300" styleClass="combo-box"/>
+
+            <Label text="Proveedor:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="form-label"/>
+            <ComboBox fx:id="providerField" GridPane.rowIndex="5" GridPane.columnIndex="1"
+                      prefWidth="300" styleClass="combo-box"/>
+
+            <Label text="Clase de Riesgo:" GridPane.rowIndex="6" GridPane.columnIndex="0" styleClass="form-label"/>
+            <ComboBox fx:id="riskClassField" GridPane.rowIndex="6" GridPane.columnIndex="1"
+                      prefWidth="300" styleClass="combo-box">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Clase I"/>
+                        <String fx:value="Clase IIa"/>
+                        <String fx:value="Clase IIb"/>
+                        <String fx:value="Clase III"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+
+            <Label text="Certificado Calibración:" GridPane.rowIndex="7" GridPane.columnIndex="0" styleClass="form-label"/>
+            <TextField fx:id="calibrationCertField" GridPane.rowIndex="7" GridPane.columnIndex="1"
+                       promptText="Número de certificado" prefWidth="300" styleClass="text-field"/>
+
+            <Label text="Ruta de Imagen:" GridPane.rowIndex="8" GridPane.columnIndex="0" styleClass="form-label"/>
+            <TextField fx:id="imagePathField" GridPane.rowIndex="8" GridPane.columnIndex="1"
+                       promptText="Opcional" prefWidth="300" styleClass="text-field"/>
+
             <HBox spacing="15" alignment="CENTER"
-                  GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2"
-                  style="-fx-padding: 20 0 0 0;">
-                <Button text="Guardar" onAction="#saveBio"
-                        prefWidth="120"
-                        style="-fx-font-size: 14px; -fx-background-color: #4e73df; -fx-text-fill: white; -fx-background-radius: 8;" />
-                <Button text="Cancelar" onAction="#cancel"
-                        prefWidth="120"
-                        style="-fx-font-size: 14px; -fx-background-color: #999; -fx-text-fill: white; -fx-background-radius: 8;" />
+                  GridPane.rowIndex="9" GridPane.columnIndex="0" GridPane.columnSpan="2">
+
+                <Button text="Guardar" onAction="#onGuardar"
+                        prefWidth="140" styleClass="primary-button" />
+                <Button text="Cancelar" onAction="#onCancelar"
+                        prefWidth="140" styleClass="cancel-button" />
+
             </HBox>
+
         </GridPane>
     </center>
 

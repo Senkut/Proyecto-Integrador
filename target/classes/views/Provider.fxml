@@ -1,108 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<BorderPane prefWidth="1280" prefHeight="720"
-            style="-fx-background-color: linear-gradient(to bottom, #f0f4ff, #ffffff);"
-            xmlns="http://javafx.com/javafx/8"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="edu.usta.ui.ProviderController">
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="edu.usta.ui.ProviderController"
+            prefWidth="600" prefHeight="350">
 
-    <!-- HEADER -->
-    <top>
-        <VBox spacing="10" alignment="CENTER">
-            <padding>
-                <Insets top="30" bottom="20"/>
-            </padding>
+    <children>
 
-            <Label text="Registro de Proveedor"
-                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <VBox spacing="15" layoutX="50" layoutY="40">
+            <children>
 
-            <Rectangle width="250" height="3"
-                       style="-fx-fill: #8e54ff; -fx-arc-height: 10; -fx-arc-width: 10;"/>
-        </VBox>
-    </top>
+                <!-- TÍTULO -->
+                <Label text="Registrar Proveedor"
+                       style="-fx-font-size: 22; -fx-font-weight: bold;" />
 
-    <!-- CENTRAR TODO EL FORMULARIO -->
-    <center>
-        <VBox alignment="CENTER" spacing="20">
-            <GridPane hgap="20" vgap="20" alignment="CENTER">
-                <padding>
-                    <Insets top="20" bottom="20" left="40" right="40"/>
-                </padding>
+                <!-- FORMULARIO -->
+                <GridPane hgap="10" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints halignment="RIGHT" minWidth="120"/>
+                        <ColumnConstraints minWidth="250"/>
+                    </columnConstraints>
 
-                <!-- Nombre -->
-                <Label text="Nombre:" 
-                       style="-fx-font-size: 16px; -fx-text-fill: #2c3e50;"
-                       GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <children>
 
-                <TextField fx:id="nameField"
-                           promptText="Ingrese el nombre"
-                           style="-fx-background-radius: 10; -fx-padding: 8;"
-                           prefWidth="300"
-                           GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <!-- Nombre -->
+                        <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-                <!-- Empresa -->
-                <Label text="Empresa:"
-                       style="-fx-font-size: 16px; -fx-text-fill: #2c3e50;"
-                       GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <!-- TAX ID -->
+                        <Label text="Tax ID:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <TextField fx:id="taxIdField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-                <TextField fx:id="companyField"
-                           promptText="Ingrese la empresa"
-                           style="-fx-background-radius: 10; -fx-padding: 8;"
-                           prefWidth="300"
-                           GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                        <!-- Email -->
+                        <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <TextField fx:id="emailField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-                <!-- Correo -->
-                <Label text="Correo:"
-                       style="-fx-font-size: 16px; -fx-text-fill: #2c3e50;"
-                       GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-
-                <TextField fx:id="emailField"
-                           promptText="ejemplo@correo.com"
-                           style="-fx-background-radius: 10; -fx-padding: 8;"
-                           prefWidth="300"
-                           GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-
-                <!-- Teléfono -->
-                <Label text="Teléfono:"
-                       style="-fx-font-size: 16px; -fx-text-fill: #2c3e50;"
-                       GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-
-                <TextField fx:id="phoneField"
-                           promptText="Ingrese el teléfono"
-                           style="-fx-background-radius: 10; -fx-padding: 8;"
-                           prefWidth="300"
-                           GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    </children>
+                </GridPane>
 
                 <!-- BOTONES -->
-                <HBox spacing="20"
-                      alignment="CENTER"
-                      GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                    <padding>
-                        <Insets top="25"/>
-                    </padding>
+                <HBox spacing="15">
+                    <children>
 
-                    <Button text="Guardar" onAction="#saveProvider"
-                            prefWidth="150" prefHeight="45"
-                            style="-fx-font-size: 16px; -fx-background-color: #6c63ff; -fx-text-fill: white;
-                                   -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, #777, 8, 0, 0, 4);"/>
+                        <Button text="Guardar"
+                                style="-fx-background-color: #4CAF50; -fx-text-fill: white;"
+                                onAction="#saveProvider"/>
 
-                    <Button text="Cancelar" onAction="#cancel"
-                            prefWidth="150" prefHeight="45"
-                            style="-fx-font-size: 16px; -fx-background-color: #ff6c6c; -fx-text-fill: white;
-                                   -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, #777, 8, 0, 0, 4);"/>
+                        <Button text="Limpiar"
+                                style="-fx-background-color: #f4b400; -fx-text-fill: white;"
+                                onAction="#clearForm"/>
+
+                    </children>
                 </HBox>
-            </GridPane>
-        </VBox>
-    </center>
 
-</BorderPane>
+            </children>
+        </VBox>
+
+        <!-- BOTÓN REGRESAR -->
+        <Button text="⟵ Regresar"
+                layoutX="480" layoutY="14"
+                style="-fx-background-color: #2196F3; -fx-text-fill: white;"
+                onAction="#goBack"/>
+
+    </children>
+
+    <padding>
+        <Insets top="25" left="25" right="25" bottom="25"/>
+    </padding>
+
+</AnchorPane>

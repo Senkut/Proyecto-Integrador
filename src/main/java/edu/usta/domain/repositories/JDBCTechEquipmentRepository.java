@@ -76,29 +76,80 @@ public class JDBCTechEquipmentRepository implements GenericRepository<TechEquipm
     @Override
     public TechEquipment create(TechEquipment entity) {
         if (entity.getId() == null) {
-            final String sql = "INSERT INTO tech_equipment (serial, brand, model, type, state, provider, image_path, os, ram_gb) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
+            // Primero insertar en equipment y obtener el ID
+            final String equipmentSql = """
+                    INSERT INTO equipment (serial, brand, model, type, state, provider_id, image_path)
+                    VALUES (?, ?, ?, ?::equipment_type, ?::equipment_status, ?::UUID, ?)
+                    RETURNING id
+                    """;
 
-            try (Connection connection = db.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.setString(1, entity.getSerial());
-                preparedStatement.setString(2, entity.getBrand());
-                preparedStatement.setString(3, entity.getModel());
-                preparedStatement.setString(4, entity.getType().name());
-                preparedStatement.setString(5, entity.getState().name());
-                preparedStatement.setString(6, entity.getProvider().getName());
-                preparedStatement.setString(7, entity.getImagePath());
-                preparedStatement.setString(8, entity.getOs());
-                preparedStatement.setInt(9, entity.getRamGb());
+            // Luego insertar en tech_equipment con el ID obtenido
+            final String techSql = """
+                    INSERT INTO tech_equipment (id, os, ram_gb)
+                    VALUES (?::UUID, ?, ?)
+                    """;
 
-                try (ResultSet result = preparedStatement.executeQuery()) {
-                    if (result.next()) {
-                        String id = result.getObject("id", String.class);
-                        return new TechEquipment(id, entity.getSerial(), entity.getBrand(),
-                                entity.getModel(), entity.getType(), entity.getState(),
-                                entity.getProvider(), entity.getImagePath(), entity.getOs(), entity.getRamGb());
+            try (Connection connection = db.getConnection()) {
+                connection.setAutoCommit(false); // Iniciar transacción
+
+                try {
+                    // Insertar en equipment
+                    UUID equipmentId;
+                    try (PreparedStatement equipmentStmt = connection.prepareStatement(equipmentSql)) {
+                        equipmentStmt.setString(1, entity.getSerial());
+                        equipmentStmt.setString(2, entity.getBrand());
+                        equipmentStmt.setString(3, entity.getModel());
+                        equipmentStmt.setString(4, entity.getType().name());
+                        equipmentStmt.setString(5, entity.getState().name());
+
+                        // Extraer el ID del Provider
+                        if (entity.getProvider() != null) {
+                            equipmentStmt.setObject(6, UUID.fromString(entity.getProvider().getId()));
+                        } else {
+                            equipmentStmt.setNull(6, java.sql.Types.OTHER);
+                        }
+
+                        equipmentStmt.setString(7, entity.getImagePath());
+
+                        try (ResultSet result = equipmentStmt.executeQuery()) {
+                            if (result.next()) {
+                                equipmentId = result.getObject("id", UUID.class);
+                            } else {
+                                throw new SQLException("No ID returned from equipment insert");
+                            }
+                        }
                     }
-                    throw new SQLException("No ID returned");
+
+                    // Insertar en tech_equipment
+                    try (PreparedStatement techStmt = connection.prepareStatement(techSql)) {
+                        techStmt.setObject(1, equipmentId);
+                        techStmt.setString(2, entity.getOs());
+                        techStmt.setInt(3, entity.getRamGb());
+
+                        techStmt.executeUpdate();
+                    }
+
+                    connection.commit(); // Confirmar transacción
+
+                    return new TechEquipment(
+                            equipmentId.toString(),
+                            entity.getSerial(),
+                            entity.getBrand(),
+                            entity.getModel(),
+                            entity.getType(),
+                            entity.getState(),
+                            entity.getProvider(),
+                            entity.getImagePath(),
+                            entity.getOs(),
+                            entity.getRamGb());
+
+                } catch (SQLException e) {
+                    connection.rollback(); // Revertir en caso de error
+                    throw e;
+                } finally {
+                    connection.setAutoCommit(true);
                 }
+
             } catch (SQLException exception) {
                 throw new RuntimeException("Error inserting tech equipment", exception);
             }

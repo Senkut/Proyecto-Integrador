@@ -1,106 +1,86 @@
 package edu.usta.ui;
 
-import javafx.event.ActionEvent;
+import edu.usta.domain.entities.Provider;
+import edu.usta.domain.repositories.JDBCProviderRepository;
+import edu.usta.infrastructure.db.DatabaseConnection;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.util.regex.Pattern;
+import javafx.scene.control.Button;
 
 public class ProviderController {
 
     @FXML
     private TextField nameField;
-
     @FXML
-    private TextField companyField;
-
+    private TextField taxIdField;
     @FXML
     private TextField emailField;
 
-    @FXML
-    private TextField phoneField;
-
-    // Patrón para validar email
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    // Agregar el repositorio
+    private final JDBCProviderRepository repository = new JDBCProviderRepository(DatabaseConnection.getInstance());
 
     @FXML
-    private void saveProvider(ActionEvent event) {
+    public void saveProvider(ActionEvent event) {
         // Validar que los campos no estén vacíos
-        if (nameField.getText().isEmpty() || companyField.getText().isEmpty() ||
-                emailField.getText().isEmpty() || phoneField.getText().isEmpty()) {
+        if (nameField.getText().isEmpty() ||
+                taxIdField.getText().isEmpty() ||
+                emailField.getText().isEmpty()) {
 
-            showAlert(Alert.AlertType.WARNING, "Campos Vacíos",
-                    "Por favor complete todos los campos");
+            showAlert(Alert.AlertType.WARNING, "Campos incompletos",
+                    "Debe llenar todos los campos.");
             return;
         }
 
-        // Validar formato de email
-        String email = emailField.getText();
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-            showAlert(Alert.AlertType.WARNING, "Email Inválido",
-                    "Por favor ingrese un correo electrónico válido");
-            return;
-        }
-
-        // Validar que el teléfono solo contenga números
-        String telefono = phoneField.getText();
-        if (!telefono.matches("\\d+")) {
-            showAlert(Alert.AlertType.WARNING, "Teléfono Inválido",
-                    "El teléfono debe contener solo números");
-            return;
-        }
-
-        // Aquí iría la lógica para guardar en base de datos
-        String nombre = nameField.getText();
-        String empresa = companyField.getText();
-
-        System.out.println("Proveedor Guardado:");
-        System.out.println("Nombre: " + nombre);
-        System.out.println("Empresa: " + empresa);
-        System.out.println("Correo: " + email);
-        System.out.println("Teléfono: " + telefono);
-
-        showAlert(Alert.AlertType.INFORMATION, "Éxito",
-                "Proveedor registrado correctamente");
-
-        clearFields();
-    }
-
-    @FXML
-    private void cancel(ActionEvent event) {
-        returnToMainMenu(event);
-    }
-
-    private void clearFields() {
-        nameField.clear();
-        companyField.clear();
-        emailField.clear();
-        phoneField.clear();
-    }
-
-    private void returnToMainMenu(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("MainView.fxml"));
-            Parent root = loader.load();
+            // Crear el objeto Provider
+            Provider provider = new Provider(
+                    nameField.getText(),
+                    taxIdField.getText(),
+                    emailField.getText());
 
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Sistema de Registros");
-            stage.show();
+            // Guardar en la base de datos
+            repository.create(provider);
 
-        } catch (IOException e) {
+            showAlert(Alert.AlertType.INFORMATION, "Éxito",
+                    "El proveedor ha sido registrado correctamente.");
+
+            // Limpiar los campos
+            clearForm(event);
+
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Error",
+                    "Ocurrió un error al guardar el proveedor: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    @FXML
+    public void clearForm(ActionEvent event) {
+        nameField.clear();
+        taxIdField.clear();
+        emailField.clear();
+    }
+
+    @FXML
+    private void goBack(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/MainView.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Método auxiliar para mostrar alertas
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

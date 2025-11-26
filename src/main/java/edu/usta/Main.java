@@ -17,13 +17,14 @@ public class Main extends Application {
 
             Scene scene = new Scene(root);
 
+            // ✔️ Agregar el CSS global del menú
+            scene.getStylesheets().add(
+                    getClass().getResource("/css/mainmenu.css").toExternalForm());
+
             primaryStage.setTitle("Sistema de Registros");
             primaryStage.setScene(scene);
 
-            // ✔️ Permitir que la ventana crezca automáticamente
             primaryStage.setResizable(true);
-
-            // ✔️ Mostrar en pantalla completa (sin fullscreen)
             primaryStage.setMaximized(true);
 
             primaryStage.show();

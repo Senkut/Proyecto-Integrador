@@ -1,93 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
 <BorderPane prefWidth="1280" prefHeight="720"
             xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="edu.usta.ui.TechEquipmentController"
-            style="-fx-background-color: linear-gradient(to bottom, #f0f4ff, #ffffff);">
+            style="-fx-background-color: linear-gradient(to bottom, #e8ecff, #ffffff);">
 
     <!-- HEADER -->
     <top>
-        <VBox spacing="10" alignment="CENTER">
-            <padding>
-                <Insets top="40" bottom="20"/>
-            </padding>
+        <VBox alignment="CENTER" spacing="10">
+            <padding><Insets top="35" bottom="20"/></padding>
 
             <Label text="Registro de Equipo Tecnológico"
-                   style="-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                   style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2d2f66;"/>
 
-            <Rectangle width="300" height="3"
-                       style="-fx-fill: #5a7dff; -fx-arc-width: 10; -fx-arc-height: 10;"/>
+            <Rectangle width="320" height="4"
+                       style="-fx-fill: #6a73ff; -fx-arc-width: 20; -fx-arc-height: 20;"/>
         </VBox>
     </top>
 
-    <!-- FORMULARIO CENTRADO -->
+    <!-- CONTENEDOR CENTRAL -->
     <center>
         <VBox alignment="CENTER">
-            <GridPane hgap="25" vgap="22" alignment="CENTER"
-                      style="-fx-background-color: #ffffff; -fx-background-radius: 20;
-                             -fx-effect: dropshadow(three-pass-box, #b5b5b5, 15, 0, 0, 6);">
-                
-                <padding>
-                    <Insets top="40" bottom="40" left="60" right="60"/>
-                </padding>
 
-                <!-- Campos -->
-                <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"
-                       style="-fx-font-size: 18px; -fx-text-fill: #2c3e50;"/>
-                <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                           prefWidth="300" promptText="Ingrese el nombre del equipo"
-                           style="-fx-background-radius: 10; -fx-padding: 8;"/>
+            <VBox spacing="30"
+                  alignment="CENTER"
+                  style="-fx-background-color: #ffffff;
+                         -fx-background-radius: 25;
+                         -fx-padding: 40;
+                         -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.25), 20, 0, 0, 10);">
 
-                <Label text="Marca:" GridPane.rowIndex="1" GridPane.columnIndex="0"
-                       style="-fx-font-size: 18px; -fx-text-fill: #2c3e50;"/>
-                <TextField fx:id="brandField" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                           prefWidth="300" promptText="Ingrese la marca"
-                           style="-fx-background-radius: 10; -fx-padding: 8;"/>
+                <!-- FORMULARIO -->
+                <GridPane hgap="25" vgap="20" alignment="CENTER">
+                    <padding><Insets left="50" right="50"/></padding>
 
-                <Label text="Modelo:" GridPane.rowIndex="2" GridPane.columnIndex="0"
-                       style="-fx-font-size: 18px; -fx-text-fill: #2c3e50;"/>
-                <TextField fx:id="modelField" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                           prefWidth="300" promptText="Ingrese el modelo"
-                           style="-fx-background-radius: 10; -fx-padding: 8;"/>
+                    <!-- SERIAL -->
+                    <Label text="Serial:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <TextField fx:id="serialField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                               prefWidth="300" promptText="Ingrese serial"/>
 
-                <Label text="Precio:" GridPane.rowIndex="3" GridPane.columnIndex="0"
-                       style="-fx-font-size: 18px; -fx-text-fill: #2c3e50;"/>
-                <TextField fx:id="priceField" GridPane.rowIndex="3" GridPane.columnIndex="1"
-                           prefWidth="300" promptText="Ingrese el precio"
-                           style="-fx-background-radius: 10; -fx-padding: 8;"/>
+                    <!-- MARCA -->
+                    <Label text="Marca:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <TextField fx:id="brandField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                               prefWidth="300" promptText="Ingrese marca"/>
 
-                <!-- BOTONES -->
-                <HBox spacing="20" alignment="CENTER"
-                      GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                    <padding>
-                        <Insets top="30"/>
-                    </padding>
+                    <!-- MODELO -->
+                    <Label text="Modelo:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <TextField fx:id="modelField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                               prefWidth="300" promptText="Ingrese modelo"/>
 
-                    <Button text="Guardar" onAction="#saveTech"
-                            prefWidth="150" prefHeight="45"
-                            style="-fx-font-size: 16px; -fx-background-color: #5a7dff;
-                                   -fx-text-fill: white; -fx-background-radius: 12;
-                                   -fx-effect: dropshadow(three-pass-box, #777, 10, 0, 0, 4);"/>
+                    <!-- TIPO -->
+                    <Label text="Tipo:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                    <ComboBox fx:id="typeBox" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                              prefWidth="300"/>
 
-                    <Button text="Cancelar" onAction="#cancel"
-                            prefWidth="150" prefHeight="45"
-                            style="-fx-font-size: 16px; -fx-background-color: #ff5a5a;
-                                   -fx-text-fill: white; -fx-background-radius: 12;
-                                   -fx-effect: dropshadow(three-pass-box, #777, 10, 0, 0, 4);"/>
-                </HBox>
+                    <!-- ESTADO -->
+                    <Label text="Estado:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                    <ComboBox fx:id="stateBox" GridPane.rowIndex="4" GridPane.columnIndex="1"
+                              prefWidth="300"/>
 
-            </GridPane>
+                    <!-- PROVEEDOR -->
+                    <Label text="Proveedor:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                    <ComboBox fx:id="providerBox" GridPane.rowIndex="5" GridPane.columnIndex="1"
+                              prefWidth="300"/>
+
+                    <!-- SISTEMA OPERATIVO -->
+                    <Label text="Sistema Operativo:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                    <TextField fx:id="osField" GridPane.rowIndex="6" GridPane.columnIndex="1"
+                               prefWidth="300" promptText="Ej: Windows 10, Linux..."/>
+
+                    <!-- RAM -->
+                    <Label text="Memoria RAM (GB):" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+                    <TextField fx:id="ramField" GridPane.rowIndex="7" GridPane.columnIndex="1"
+                               prefWidth="300" promptText="Ej: 8, 16, 32"/>
+
+                    <!-- IMAGEN -->
+                    <Label text="Ruta de Imagen:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+                    <TextField fx:id="imageField" GridPane.rowIndex="8" GridPane.columnIndex="1"
+                               prefWidth="300" promptText="Opcional"/>
+
+                    <!-- BOTONES -->
+                    <HBox spacing="25" alignment="CENTER"
+                          GridPane.rowIndex="9" GridPane.columnIndex="0" GridPane.columnSpan="2">
+
+                        <Button text="Guardar" onAction="#saveTech" prefWidth="160" prefHeight="45"
+                                style="-fx-background-color: linear-gradient(to right,#6a73ff,#9a63ff);
+                                       -fx-background-radius: 20; -fx-text-fill: white; -fx-font-size: 16px;"/>
+
+                        <Button text="Cancelar" onAction="#cancel" prefWidth="160" prefHeight="45"
+                                style="-fx-background-color: #e2e2e2; -fx-background-radius: 20;
+                                       -fx-text-fill:#333; -fx-font-size: 16px;"/>
+
+                        <Button text="Volver al Menú" onAction="#goToMainMenu" prefWidth="190" prefHeight="45"
+                                style="-fx-background-color: linear-gradient(to right,#ff6565,#ff8585);
+                                       -fx-background-radius: 20; -fx-text-fill: white; -fx-font-size: 16px;"/>
+                    </HBox>
+
+                </GridPane>
+
+            </VBox>
         </VBox>
     </center>
 

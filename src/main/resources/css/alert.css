@@ -1,0 +1,46 @@
+/* Fondo y tipografía */
+.dialog-pane {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #660033;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+/* Texto del encabezado */
+.dialog-pane .header-panel {
+    -fx-background-color: #660033;
+    -fx-background-radius: 8px 8px 0 0;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+/* Mensaje */
+.dialog-pane .content.label {
+    -fx-font-size: 15px;
+    -fx-text-fill: #333333;
+    -fx-padding: 15 0 10 0;
+}
+
+/* Botón */
+.dialog-pane .button-bar .button {
+    -fx-background-radius: 20;
+    -fx-padding: 8 20;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-color: #660033;
+    -fx-text-fill: white;
+}
+
+.dialog-pane .button-bar .button:hover {
+    -fx-background-color: #8f004b;
+}
+
+.dialog-pane .button-bar .button:pressed {
+    -fx-background-color: #500027;
+}
